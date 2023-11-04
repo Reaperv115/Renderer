@@ -1,4 +1,5 @@
 #include "trpch.h"
+#include "Utilities/ErrorLogger.h"
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
@@ -30,18 +31,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	hwnd = CreateWindowEx(0, L"Renderer", L"Renderer", WS_OVERLAPPEDWINDOW, 0, 0, width, height, NULL, NULL, hInst, NULL);
 	if (hwnd == NULL)
-		std::cout << "failed to create handle" << std::endl;
+		Rhine::ErrorLogger::Log("Failed to create window handle");
 	ShowWindow(hwnd, SW_SHOW);
+	UpdateWindow(hwnd);
 
 	MSG msg = { 0 };
-	while (WM_QUIT != msg.message)
+	
+#pragma region application loops
+	/*while (true)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
+			if (msg.message == WM_QUIT)
+				break;
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}*/
+	
+	
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
+#pragma endregion working app loops using both GetMessage and PeekMessage
 
 	return 0;
 }
@@ -63,6 +77,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lPar
 	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
+		break;
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
 		break;
 	default:
 		return DefWindowProc(hwnd, Msg, wParam, lParam);
