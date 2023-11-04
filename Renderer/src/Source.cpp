@@ -10,8 +10,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	HINSTANCE hInst;
 	HWND hwnd;
 
-	int width = 1920;
-	int height = 1080;
+	int width = 1000;
+	int height = 800;
 
 	AllocConsole();
 	auto obj = freopen("CONIN$", "r", stdin);
@@ -48,5 +48,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	return DefWindowProc(hwnd, Msg, wParam, lParam);
+	switch (Msg)
+	{
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+		RECT rect;
+		GetClientRect(hwnd, &rect);
+		HBRUSH brush = CreateSolidBrush(RGB(0, 0, 255));
+		FillRect(hdc, &rect, brush);
+		EndPaint(hwnd, &ps);
+		break;
+	}
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hwnd, Msg, wParam, lParam);
+	}
 }
