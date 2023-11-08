@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\Graphics.cpp" />
     <ClCompile Include="src\Source.cpp" />
     <ClCompile Include="src\trpch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -144,11 +145,14 @@
     </ClCompile>
     <ClCompile Include="src\Utilities\ErrorLogger.cpp" />
     <ClCompile Include="src\Utilities\StringConverter.cpp" />
+    <ClCompile Include="src\WindowCreation\WindowCreation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\Graphics.h" />
     <ClInclude Include="src\trpch.h" />
     <ClInclude Include="src\Utilities\ErrorLogger.h" />
     <ClInclude Include="src\Utilities\StringConverter.h" />
+    <ClInclude Include="src\WindowCreation\WindowCreation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
