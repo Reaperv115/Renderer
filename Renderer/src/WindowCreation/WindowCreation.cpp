@@ -1,16 +1,14 @@
 #include "trpch.h"
 #include "WindowCreation.h"
 
-namespace Rhine
-{
-	bool Rhine::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName)
+	bool Rhine::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height)
 	{
-		CreateConsoleWindow();
+		CreateDebugConsoleWindow();
 		applicationInstance = inst;
 		this->className = Rhine::StringConverter::StringtoWideString(className);
 		this->windowName = Rhine::StringConverter::StringtoWideString(windowName);
 		RegisterWindowClass();
-		windowHandle = CreateWindowEx(0, 
+		this->windowHandle = CreateWindowEx(0, 
 			this->className.c_str(), 
 			this->windowName.c_str(), 
 			WS_OVERLAPPEDWINDOW, 
@@ -23,20 +21,20 @@ namespace Rhine
 			applicationInstance,
 			NULL);
 
-		if (windowHandle == NULL)
+		if (this->windowHandle == NULL)
 		{
 			Rhine::ErrorLogger::Log("Failed to initialize window handle");
 			return false;
 		}
 		else
 		{
-			ShowWindow(windowHandle, SW_SHOW);
-			UpdateWindow(windowHandle);
+			ShowWindow(this->windowHandle, SW_SHOW);
+			UpdateWindow(this->windowHandle);
 		}
 		return true;
 	}
 
-	void Rhine::WindowCreation::CreateConsoleWindow()
+	void Rhine::WindowCreation::CreateDebugConsoleWindow()
 	{
 		AllocConsole();
 		auto obj = freopen("CONIN$", "r", stdin);
@@ -44,7 +42,7 @@ namespace Rhine
 		auto obj3 = freopen("CONOUT$", "w", stderr);
 	}
 
-	void WindowCreation::RegisterWindowClass()
+	void Rhine::WindowCreation::RegisterWindowClass()
 	{
 		WNDCLASSEX wc;
 		ZeroMemory(&wc, sizeof(WNDCLASSEX));
@@ -56,7 +54,12 @@ namespace Rhine
 		RegisterClassEx(&wc);
 	}
 
-	bool WindowCreation::Run()
+	HWND Rhine::WindowCreation::GetWindowHandle()
+	{
+		return this->windowHandle;
+	}
+
+	void Rhine::WindowCreation::Run()
 	{
 		MSG msg = { 0 };
 		while (GetMessage(&msg, NULL, 0, 0))
@@ -65,10 +68,9 @@ namespace Rhine
 			DispatchMessage(&msg);
 			std::cout << "Application running" << std::endl;
 		}
-		return true;
 	}
 
-	LRESULT CALLBACK WindowCreation::WindowProcedures(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK Rhine::WindowCreation::WindowProcedures(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (Msg)
 		{
@@ -94,4 +96,4 @@ namespace Rhine
 		}
 	}
 
-}
+
