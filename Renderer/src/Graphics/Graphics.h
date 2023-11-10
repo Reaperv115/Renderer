@@ -1,6 +1,7 @@
 #pragma once
 #include "../Utilities/ErrorLogger.h"
 #include "../WindowCreation/WindowCreation.h"
+
 namespace Rhine
 {
 	class Graphics
@@ -9,8 +10,12 @@ namespace Rhine
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3ddeviceContext;
 		Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgiswapChain;
 		Microsoft::WRL::ComPtr<IDXGIFactory2> dxgiFactory;
+		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rendertargetView;
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+		D3D11_VIEWPORT d3d11viewPort;
 	public:
-		bool InitializeDirectX(int width, int height, WindowCreation windowCreation);
+		bool InitializeDirectX(int width, int height, HWND handle);
+		void Render();
 	};
 }
 

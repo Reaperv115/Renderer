@@ -7,7 +7,7 @@ namespace Rhine
 	{
 	public:
 		bool InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height);
-		void Run();
+		bool Run();
 		HWND GetWindowHandle();
 	private:
 		HWND windowHandle;

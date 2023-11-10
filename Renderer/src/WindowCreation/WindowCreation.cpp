@@ -3,6 +3,7 @@
 
 	bool Rhine::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height)
 	{
+		// Rendering Window Initialization
 		CreateDebugConsoleWindow();
 		applicationInstance = inst;
 		this->className = Rhine::StringConverter::StringtoWideString(className);
@@ -59,15 +60,22 @@
 		return this->windowHandle;
 	}
 
-	void Rhine::WindowCreation::Run()
+	bool Rhine::WindowCreation::Run()
 	{
 		MSG msg = { 0 };
-		while (GetMessage(&msg, NULL, 0, 0))
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 			std::cout << "Application running" << std::endl;
 		}
+
+		if (msg.message == WM_QUIT)
+		{
+			UnregisterClass(className.c_str(), applicationInstance);
+			return false;
+		}
+		return true;
 	}
 
 	LRESULT CALLBACK Rhine::WindowCreation::WindowProcedures(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
