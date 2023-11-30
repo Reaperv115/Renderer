@@ -50,13 +50,15 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 	dxgiswapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 	d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, rendertargetView.GetAddressOf());
 
+	d3ddeviceContext->OMSetRenderTargets(1, rendertargetView.GetAddressOf(), depthstencilView.Get());
+
 	// creating and setting viewport
 	d3d11viewPort.TopLeftX = 0;
 	d3d11viewPort.TopLeftY = 0;
 	d3d11viewPort.MinDepth = 0.0f;
 	d3d11viewPort.MaxDepth = 1.0f;
-	d3d11viewPort.Width = width;
-	d3d11viewPort.Height = height;
+	d3d11viewPort.Width = (FLOAT)width;
+	d3d11viewPort.Height = (FLOAT)height;
 	d3ddeviceContext->RSSetViewports(1, &d3d11viewPort);
 
 	return true;
@@ -65,6 +67,80 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 void Rhine::Graphics::Render()
 {
 	float rgba[] = {0.0f, 1.0, 0.0f, 1.0f};
+	
+
+	struct Vertex
+	{
+		float x;
+		float y;
+	};
+
+	Vertex Triangle[] =
+	{
+		{0.0f, 1.0f},
+		{1.0f, 0.0f},
+		{-1.0f, 0.0f}
+	};
+
+	// triangle buffer description
+	trianglebufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	trianglebufferDesc.ByteWidth = sizeof(Triangle);
+	trianglebufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	trianglebufferDesc.CPUAccessFlags = 0;
+	trianglebufferDesc.MiscFlags = 0;
+
+	triangleData.pSysMem = Triangle;
+	triangleData.SysMemPitch = 0;
+	triangleData.SysMemSlicePitch = 0;
+	HRESULT hr = d3dDevice->CreateBuffer(&trianglebufferDesc, &triangleData, triangleBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log(hr, "Failed to create triangle buffer");
+	}
+
+	// vertex shader
+	D3D11_INPUT_ELEMENT_DESC trianglelayoutDesc[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+	UINT numElements = ARRAYSIZE(trianglelayoutDesc);
+
+	hr = D3DReadFileToBlob(StringConverter::StringtoWideString(vertexshaderPath).c_str(), shaderBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log("Failed to read file to blob");
+	}
+	hr = d3dDevice->CreateVertexShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, vShader.GetAddressOf());
+	if (FAILED(hr))
+		ErrorLogger::Log(hr, "Failed to create vertex shader");
+	hr = d3dDevice->CreateInputLayout(trianglelayoutDesc, numElements, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), triangleinputLayout.GetAddressOf());
+	if (FAILED(hr))
+		ErrorLogger::Log(hr, "Failed to create input layout");
+
+	// pixel shader
+	hr = D3DReadFileToBlob(StringConverter::StringtoWideString(pixelshaderPath).c_str(), shaderBuffer.GetAddressOf());
+	if (FAILED(hr))
+	{
+		ErrorLogger::Log("Failed to read file to blob");
+	}
+	hr = d3dDevice->CreatePixelShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, pShader.GetAddressOf());
+	if (FAILED(hr))
+		ErrorLogger::Log(hr, "Failed to create pixel shader");
+
+	
+
 	d3ddeviceContext->ClearRenderTargetView(rendertargetView.Get(), rgba);
+	d3ddeviceContext->IASetInputLayout(triangleinputLayout.Get());
+	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
+	d3ddeviceContext->VSSetShader(vShader.Get(), NULL, 0);
+	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
+
+	
+
+	d3ddeviceContext->Draw(3, 0);
+
 	dxgiswapChain->Present(1, 0);
 }

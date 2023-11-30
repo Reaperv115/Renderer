@@ -3,12 +3,20 @@
 
 	bool Rhine::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height)
 	{
-		// Rendering Window Initialization
+		// creating console window to debug
 		CreateDebugConsoleWindow();
+
+		// catching instance to application
 		applicationInstance = inst;
+
+		// naming the window class and window itself
 		this->className = Rhine::StringConverter::StringtoWideString(className);
 		this->windowName = Rhine::StringConverter::StringtoWideString(windowName);
+
+		// registering window class
 		RegisterWindowClass();
+
+		// creating render window
 		this->windowHandle = CreateWindowEx(0, 
 			this->className.c_str(), 
 			this->windowName.c_str(), 
@@ -22,6 +30,7 @@
 			applicationInstance,
 			NULL);
 
+		// checking to see if it was created successfully
 		if (this->windowHandle == NULL)
 		{
 			Rhine::ErrorLogger::Log("Failed to initialize window handle");
@@ -34,6 +43,30 @@
 		}
 		return true;
 	}
+
+	void Rhine::WindowCreation::CalculateFrameStats()
+	{
+		static int frameCnt = 0;
+		static float timeelapsed = 0.0f;
+		frameCnt++;
+
+		if ((timer.TotalTime() - timeelapsed) >= 1.0f)
+		{
+			float fps = (float)frameCnt;
+			float mspf = 1000.0f / fps;
+
+			std::wostringstream outs;
+			outs.precision(6);
+			outs << mainwndCaption << L" "
+				<< L"FPS: " << fps << L" "
+				<< L"Frame Time: " << mspf << L" (ms)";
+			SetWindowText(windowHandle, outs.str().c_str());
+
+			frameCnt = 0;
+			timeelapsed += 1.0f;
+		}
+	}
+	
 
 	void Rhine::WindowCreation::CreateDebugConsoleWindow()
 	{
@@ -62,19 +95,27 @@
 
 	bool Rhine::WindowCreation::Run()
 	{
+		// running the application
 		MSG msg = { 0 };
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			std::cout << "Application running" << std::endl;
 		}
-
+		else
+		{
+			timer.Tick();
+			if (!appPaused)
+			{
+				CalculateFrameStats();
+			}
+		}
 		if (msg.message == WM_QUIT)
 		{
 			UnregisterClass(className.c_str(), applicationInstance);
 			return false;
 		}
+		
 		return true;
 	}
 
@@ -93,6 +134,18 @@
 			EndPaint(hwnd, &ps);
 			break;
 		}
+		/*case WM_ACTIVATE:
+			if (LOWORD(wParam) == WA_INACTIVE)
+			{
+				appPaused = true;
+				timer.Stop();
+			}
+			else
+			{
+				appPaused = false;
+				timer.Start();
+			}
+			break;*/
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;

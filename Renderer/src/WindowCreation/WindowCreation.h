@@ -1,5 +1,6 @@
 #pragma once
 #include "../Utilities/ErrorLogger.h"
+#include "../Engine/Timer.h"
 
 namespace Rhine
 {
@@ -14,8 +15,12 @@ namespace Rhine
 		HINSTANCE applicationInstance;
 		std::wstring className;
 		std::wstring windowName;
-	private:
+		std::wstring mainwndCaption;
+		bool appPaused;
+		Timer timer;
 
+	private:
+		void CalculateFrameStats();
 		void CreateDebugConsoleWindow();
 		void RegisterWindowClass();
 

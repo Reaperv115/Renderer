@@ -147,6 +147,7 @@
     <ClCompile Include="src\Utilities\ErrorLogger.cpp" />
     <ClCompile Include="src\Utilities\StringConverter.cpp" />
     <ClCompile Include="src\WindowCreation\WindowCreation.cpp" />
+    <ClCompile Include="src\Engine\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Engine.h" />
@@ -155,6 +156,21 @@
     <ClInclude Include="src\Utilities\ErrorLogger.h" />
     <ClInclude Include="src\Utilities\StringConverter.h" />
     <ClInclude Include="src\WindowCreation\WindowCreation.h" />
+    <ClInclude Include="src\Engine\Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\Graphics\Shaders\PixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="src\Graphics\Shaders\VertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,7 +5,14 @@
       <FullPath>C:\Dev\C-Plus-Plus\Renderer\bin\x64-Debug\Renderer\Renderer.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Dev\C-Plus-Plus\Renderer\bin\x64-Debug\Renderer\PixelShader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Dev\C-Plus-Plus\Renderer\bin\x64-Debug\Renderer\VertexShader.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>
