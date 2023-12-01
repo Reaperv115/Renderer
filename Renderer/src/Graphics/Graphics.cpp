@@ -6,8 +6,7 @@
 bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 {
 	// filling out swap chain description
-	DXGI_SWAP_CHAIN_DESC1 swapchainDescription;
-	ZeroMemory(&swapchainDescription, sizeof(DXGI_SWAP_CHAIN_DESC1));
+	DXGI_SWAP_CHAIN_DESC1 swapchainDescription = { 0 };
 	swapchainDescription.BufferCount = 1;
 	swapchainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapchainDescription.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -19,8 +18,7 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 	swapchainDescription.SampleDesc.Quality = 0;
 
 	// filling out options for going full-screen
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDescription;
-	ZeroMemory(&fullscreenDescription, sizeof(DXGI_SWAP_CHAIN_FULLSCREEN_DESC));
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDescription = { 0 };
 	fullscreenDescription.RefreshRate.Numerator = 60;
 	fullscreenDescription.RefreshRate.Denominator = 1;
 	fullscreenDescription.Windowed = true;
@@ -43,8 +41,8 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 	RHINE_ASSERT(dxgiFactory->CreateSwapChainForHwnd(d3dDevice.Get(), handle, &swapchainDescription, &fullscreenDescription, 0, dxgiswapChain.GetAddressOf()), "Failed to create swapchain");
 
 	// creating backbuffer to create RenderTargetView to render to
-	dxgiswapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-	d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, rendertargetView.GetAddressOf());	
+	RHINE_ASSERT(dxgiswapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer), "Failed to create backbuffer");
+	RHINE_ASSERT(d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, rendertargetView.GetAddressOf()), "Failed to create render target view");
 
 	return true;
 }
@@ -52,20 +50,26 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 
 void Rhine::Graphics::Render()
 {
-	float rgba[] = {0.0f, 1.0, 0.0f, 1.0f};
+	float rgba[] = {1.0f, 1.0, 1.0f, 1.0f};
 	
 
 	struct Vertex
 	{
 		float x;
 		float y;
+
+		float r, g, b;
 	};
 
 	Vertex Triangle[] =
 	{
-		{0.0f, 1.0f},
-		{1.0f, 0.0f},
-		{-1.0f, 0.0f}
+		{0.0f, 0.5f, 1.0f, 0.0f, 0.0f},
+		{0.5f, 0.0f, 0.0f, 1.0f, 0.0f},
+		{-0.5f, 0.0f, 0.0f, 0.0f, 1.0f},
+
+		{0.5f, 0.5f, 1.0f, 0.0f, 0.0f},
+		{0.5f, 0.8f, 0.0f, 1.0f, 0.0f},
+		{0.7f, 0.5f, 0.0f, 0.0f, 1.0f}
 	};
 
 	// triangle buffer description
@@ -83,10 +87,12 @@ void Rhine::Graphics::Render()
 	// vertex shader
 	D3D11_INPUT_ELEMENT_DESC trianglelayoutDesc[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	UINT numElements = ARRAYSIZE(trianglelayoutDesc);
 
+	// creating vertex shader
 	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(vertexshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read vertex shader");
 	RHINE_ASSERT(d3dDevice->CreateVertexShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, vShader.GetAddressOf()), "Failed to create vertex shader");
 	RHINE_ASSERT(d3dDevice->CreateInputLayout(trianglelayoutDesc, numElements, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), triangleinputLayout.GetAddressOf()), "Failed to create input layout");
@@ -117,7 +123,7 @@ void Rhine::Graphics::Render()
 
 	
 
-	d3ddeviceContext->Draw(3, 0);
+	d3ddeviceContext->Draw((UINT)std::size(Triangle), 0);
 
 	dxgiswapChain->Present(1, 0);
 }

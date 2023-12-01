@@ -30,5 +30,6 @@ namespace Rhine
 	};
 }
 
+// error-checking macro
 #define RHINE_ASSERT(hr, message) if (FAILED(hr)) {ErrorLogger::Log(hr, message);} 
 
