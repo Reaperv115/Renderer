@@ -15,11 +15,6 @@ namespace Rhine
 		ComPtr<ID3D11Texture2D> backBuffer;
 		D3D11_VIEWPORT d3d11viewPort;
 
-		ComPtr<ID3D11Texture2D> depthstencilBuffer;
-		D3D11_TEXTURE2D_DESC depthstencilbufferDescription;
-		D3D11_DEPTH_STENCIL_DESC depthstencilDescription;
-		ComPtr<ID3D11DepthStencilView> depthstencilView;
-
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		D3D11_BUFFER_DESC trianglebufferDesc;
 		D3D11_SUBRESOURCE_DATA triangleData;
@@ -34,4 +29,6 @@ namespace Rhine
 		void Render();
 	};
 }
+
+#define RHINE_ASSERT(hr, message) if (FAILED(hr)) {ErrorLogger::Log(hr, message);} 
 

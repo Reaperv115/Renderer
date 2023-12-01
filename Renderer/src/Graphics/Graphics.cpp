@@ -1,6 +1,8 @@
 #include "trpch.h"
 #include "Graphics.h"
 
+
+
 bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 {
 	// filling out swap chain description
@@ -23,46 +25,30 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 	fullscreenDescription.RefreshRate.Denominator = 1;
 	fullscreenDescription.Windowed = true;
 
-	// creating and error-checking various components needed for d3d11.
-	// return true if they all succeed and false if any fail
-	HRESULT hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, 0, 0, D3D11_SDK_VERSION, d3dDevice.GetAddressOf(), 0, d3ddeviceContext.GetAddressOf());
-	if (FAILED(hr))
-	{
-		Rhine::ErrorLogger::Log(hr, "Failed to create Device");
-		return false;
-	}
+	// creating device
+	RHINE_ASSERT(D3D11CreateDevice(NULL, 
+		D3D_DRIVER_TYPE_HARDWARE, 
+		NULL, 
+		D3D11_CREATE_DEVICE_DEBUG, 
+		0, 
+		0, 
+		D3D11_SDK_VERSION, 
+		d3dDevice.GetAddressOf(), 
+		0, 
+		d3ddeviceContext.GetAddressOf()), "Failed to create device");
+	// creating factory
+	RHINE_ASSERT(CreateDXGIFactory(__uuidof(dxgiFactory), (void**)dxgiFactory.GetAddressOf()), "Failed to create factory");
 
-	hr = CreateDXGIFactory(__uuidof(dxgiFactory), (void**)dxgiFactory.GetAddressOf());
-	if (FAILED(hr))
-	{
-		Rhine::ErrorLogger::Log(hr, "Failed to create factory");
-		return false;
-	}
-
-	hr = dxgiFactory->CreateSwapChainForHwnd(d3dDevice.Get(), handle, &swapchainDescription, &fullscreenDescription, 0, dxgiswapChain.GetAddressOf());
-	if (FAILED(hr))
-	{
-		Rhine::ErrorLogger::Log(hr, "Failed to create swap chain");
-		return false;
-	}
+	// creating swapchain
+	RHINE_ASSERT(dxgiFactory->CreateSwapChainForHwnd(d3dDevice.Get(), handle, &swapchainDescription, &fullscreenDescription, 0, dxgiswapChain.GetAddressOf()), "Failed to create swapchain");
 
 	// creating backbuffer to create RenderTargetView to render to
 	dxgiswapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-	d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, rendertargetView.GetAddressOf());
-
-	d3ddeviceContext->OMSetRenderTargets(1, rendertargetView.GetAddressOf(), depthstencilView.Get());
-
-	// creating and setting viewport
-	d3d11viewPort.TopLeftX = 0;
-	d3d11viewPort.TopLeftY = 0;
-	d3d11viewPort.MinDepth = 0.0f;
-	d3d11viewPort.MaxDepth = 1.0f;
-	d3d11viewPort.Width = (FLOAT)width;
-	d3d11viewPort.Height = (FLOAT)height;
-	d3ddeviceContext->RSSetViewports(1, &d3d11viewPort);
+	d3dDevice->CreateRenderTargetView(backBuffer.Get(), 0, rendertargetView.GetAddressOf());	
 
 	return true;
 }
+
 
 void Rhine::Graphics::Render()
 {
@@ -92,11 +78,7 @@ void Rhine::Graphics::Render()
 	triangleData.pSysMem = Triangle;
 	triangleData.SysMemPitch = 0;
 	triangleData.SysMemSlicePitch = 0;
-	HRESULT hr = d3dDevice->CreateBuffer(&trianglebufferDesc, &triangleData, triangleBuffer.GetAddressOf());
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log(hr, "Failed to create triangle buffer");
-	}
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&trianglebufferDesc, &triangleData, triangleBuffer.GetAddressOf()), "Failed to create vertex buffer");
 
 	// vertex shader
 	D3D11_INPUT_ELEMENT_DESC trianglelayoutDesc[] =
@@ -105,29 +87,24 @@ void Rhine::Graphics::Render()
 	};
 	UINT numElements = ARRAYSIZE(trianglelayoutDesc);
 
-	hr = D3DReadFileToBlob(StringConverter::StringtoWideString(vertexshaderPath).c_str(), shaderBuffer.GetAddressOf());
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log("Failed to read file to blob");
-	}
-	hr = d3dDevice->CreateVertexShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, vShader.GetAddressOf());
-	if (FAILED(hr))
-		ErrorLogger::Log(hr, "Failed to create vertex shader");
-	hr = d3dDevice->CreateInputLayout(trianglelayoutDesc, numElements, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), triangleinputLayout.GetAddressOf());
-	if (FAILED(hr))
-		ErrorLogger::Log(hr, "Failed to create input layout");
+	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(vertexshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read vertex shader");
+	RHINE_ASSERT(d3dDevice->CreateVertexShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, vShader.GetAddressOf()), "Failed to create vertex shader");
+	RHINE_ASSERT(d3dDevice->CreateInputLayout(trianglelayoutDesc, numElements, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), triangleinputLayout.GetAddressOf()), "Failed to create input layout");
 
 	// pixel shader
-	hr = D3DReadFileToBlob(StringConverter::StringtoWideString(pixelshaderPath).c_str(), shaderBuffer.GetAddressOf());
-	if (FAILED(hr))
-	{
-		ErrorLogger::Log("Failed to read file to blob");
-	}
-	hr = d3dDevice->CreatePixelShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, pShader.GetAddressOf());
-	if (FAILED(hr))
-		ErrorLogger::Log(hr, "Failed to create pixel shader");
+	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(pixelshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read pixel shader");
+	RHINE_ASSERT(d3dDevice->CreatePixelShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, pShader.GetAddressOf()), "Failed to create pixel shader");
 
-	
+	d3ddeviceContext->OMSetRenderTargets(1, rendertargetView.GetAddressOf(), nullptr);
+
+	// creating and setting viewport
+	d3d11viewPort.TopLeftX = 0;
+	d3d11viewPort.TopLeftY = 0;
+	d3d11viewPort.MinDepth = 0.0f;
+	d3d11viewPort.MaxDepth = 1.0f;
+	d3d11viewPort.Width = 800;
+	d3d11viewPort.Height = 600;
+	d3ddeviceContext->RSSetViewports(1, &d3d11viewPort);
 
 	d3ddeviceContext->ClearRenderTargetView(rendertargetView.Get(), rgba);
 	d3ddeviceContext->IASetInputLayout(triangleinputLayout.Get());

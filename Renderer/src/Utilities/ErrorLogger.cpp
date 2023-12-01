@@ -10,14 +10,9 @@ namespace Rhine
 	}
 	void ErrorLogger::Log(HRESULT hr, std::string message)
 	{
-		std::wstring error_message = L"Error: " + StringConverter::StringtoWideString(message) +
+		std::wstring error_message = L"Error: " + hr + StringConverter::StringtoWideString(message) +
 			L"\n";
 		MessageBoxW(NULL, error_message.c_str(), L"Error", MB_ICONERROR);
-	}
-
-	void ErrorLogger::Log(HRESULT hr, std::wstring message)
-	{
-		MessageBoxW(NULL, message.c_str(), L"Error", MB_ICONERROR);
 	}
 
 }

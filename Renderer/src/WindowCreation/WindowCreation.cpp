@@ -134,27 +134,14 @@
 			EndPaint(hwnd, &ps);
 			break;
 		}
-		/*case WM_ACTIVATE:
-			if (LOWORD(wParam) == WA_INACTIVE)
-			{
-				appPaused = true;
-				timer.Stop();
-			}
-			else
-			{
-				appPaused = false;
-				timer.Start();
-			}
-			break;*/
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
 			break;
-		default:
-			return DefWindowProc(hwnd, Msg, wParam, lParam);
 		}
+		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}
 
 
