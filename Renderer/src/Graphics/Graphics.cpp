@@ -62,14 +62,12 @@ void Rhine::Graphics::Render()
 	};
 
 	Vertex Triangle[] =
-	{
-		{0.0f, 0.5f, 1.0f, 0.0f, 0.0f},
-		{0.5f, 0.0f, 0.0f, 1.0f, 0.0f},
-		{-0.5f, 0.0f, 0.0f, 0.0f, 1.0f},
-
-		{0.5f, 0.5f, 1.0f, 0.0f, 0.0f},
-		{0.5f, 0.8f, 0.0f, 1.0f, 0.0f},
-		{0.7f, 0.5f, 0.0f, 0.0f, 1.0f}
+	{	  
+		{-0.5f, 0.0f,  1.0f, 0.0f, 0.0f},
+		{-0.5f, 0.5f,  0.0f, 1.0f, 0.0f},
+		{0.5f,  0.5f,  0.0f, 0.0f, 1.0f},
+		{0.5f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{-0.5f, 0.0f,  1.0f, 0.0f, 0.0f},
 	};
 
 	// triangle buffer description
@@ -114,7 +112,7 @@ void Rhine::Graphics::Render()
 
 	d3ddeviceContext->ClearRenderTargetView(rendertargetView.Get(), rgba);
 	d3ddeviceContext->IASetInputLayout(triangleinputLayout.Get());
-	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
