@@ -17,6 +17,9 @@ namespace Rhine
 
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		D3D11_BUFFER_DESC trianglebufferDesc;
+
+		ComPtr<ID3D11Buffer> triangleindexBuffer;
+		D3D11_BUFFER_DESC indexbufferDescription;
 		D3D11_SUBRESOURCE_DATA triangleData;
 		std::string vertexshaderPath = "../bin/x64-Debug/Renderer/VertexShader.cso";
 		std::string pixelshaderPath = "../bin/x64-Debug/Renderer/PixelShader.cso";

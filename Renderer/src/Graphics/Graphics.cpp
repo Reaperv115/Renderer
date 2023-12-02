@@ -63,14 +63,13 @@ void Rhine::Graphics::Render()
 
 	Vertex Triangle[] =
 	{	  
-		{-0.5f, 0.0f,  1.0f, 0.0f, 0.0f},
-		{-0.5f, 0.5f,  0.0f, 1.0f, 0.0f},
-		{0.5f,  0.5f,  0.0f, 0.0f, 1.0f},
-		{0.5f,  0.0f,  1.0f, 0.0f, 0.0f},
-		{-0.5f, 0.0f,  1.0f, 0.0f, 0.0f},
+		{-0.5f, -0.5f,  1.0f, 0.0f, 0.0f},//0
+		{-0.5f, 0.5f,  0.0f, 1.0f, 0.0f},//1
+		{0.5f,  0.5f,  0.0f, 0.0f, 1.0f},//2
+		{0.5f, -0.5f,   1.0f, 0.0f, 0.0f} //3
 	};
 
-	// triangle buffer description
+	// triangle vertex buffer description
 	trianglebufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	trianglebufferDesc.ByteWidth = sizeof(Triangle);
 	trianglebufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -81,6 +80,29 @@ void Rhine::Graphics::Render()
 	triangleData.SysMemPitch = 0;
 	triangleData.SysMemSlicePitch = 0;
 	RHINE_ASSERT(d3dDevice->CreateBuffer(&trianglebufferDesc, &triangleData, triangleBuffer.GetAddressOf()), "Failed to create vertex buffer");
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
+	
+
+	unsigned int indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	indexbufferDescription = { 0 };
+	indexbufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexbufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	indexbufferDescription.CPUAccessFlags = 0;
+	indexbufferDescription.MiscFlags = 0;
+	indexbufferDescription.ByteWidth = sizeof(indices);
+	indexbufferDescription.StructureByteStride = sizeof(unsigned int);
+	D3D11_SUBRESOURCE_DATA isd = { 0 };
+	isd.pSysMem = indices;
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &isd, triangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
+	d3ddeviceContext->IASetIndexBuffer(triangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	// vertex shader
 	D3D11_INPUT_ELEMENT_DESC trianglelayoutDesc[] =
@@ -112,16 +134,12 @@ void Rhine::Graphics::Render()
 
 	d3ddeviceContext->ClearRenderTargetView(rendertargetView.Get(), rgba);
 	d3ddeviceContext->IASetInputLayout(triangleinputLayout.Get());
-	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
+	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	d3ddeviceContext->VSSetShader(vShader.Get(), NULL, 0);
 	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
 
 	
-
-	d3ddeviceContext->Draw((UINT)std::size(Triangle), 0);
+	d3ddeviceContext->DrawIndexed(std::size(indices), 0, 0);
 
 	dxgiswapChain->Present(1, 0);
 }
