@@ -55,10 +55,16 @@ void Rhine::Graphics::Render()
 
 	struct Vertex
 	{
-		float x;
-		float y;
+		struct
+		{
+			float x;
+			float y;
+		} pos;
 
-		float r, g, b;
+		struct
+		{
+			float r, g, b;
+		} col;
 	};
 
 	Vertex Triangle[] =
@@ -66,7 +72,7 @@ void Rhine::Graphics::Render()
 		{-0.5f, -0.5f,  1.0f, 0.0f, 0.0f},//0
 		{-0.5f, 0.5f,  0.0f, 1.0f, 0.0f},//1
 		{0.5f,  0.5f,  0.0f, 0.0f, 1.0f},//2
-		{0.5f, -0.5f,   1.0f, 0.0f, 0.0f} //3
+		{0.5f, -0.5f,   0.0f, 1.0f, 0.0f} //3
 	};
 
 	// triangle vertex buffer description
@@ -132,9 +138,17 @@ void Rhine::Graphics::Render()
 	d3d11viewPort.Height = 600;
 	d3ddeviceContext->RSSetViewports(1, &d3d11viewPort);
 
+	// creating rasterizer state
+	D3D11_RASTERIZER_DESC rasterizerDescription;
+	rasterizerDescription = {  };
+	rasterizerDescription.CullMode = D3D11_CULL_BACK;
+	rasterizerDescription.FillMode = D3D11_FILL_WIREFRAME;
+	RHINE_ASSERT(d3dDevice->CreateRasterizerState(&rasterizerDescription, rasterizerState.GetAddressOf()), "Failed to create rasterizer state");
+
 	d3ddeviceContext->ClearRenderTargetView(rendertargetView.Get(), rgba);
 	d3ddeviceContext->IASetInputLayout(triangleinputLayout.Get());
 	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	d3ddeviceContext->RSSetState(rasterizerState.Get());
 	d3ddeviceContext->VSSetShader(vShader.Get(), NULL, 0);
 	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
 

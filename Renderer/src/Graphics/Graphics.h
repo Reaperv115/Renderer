@@ -14,6 +14,7 @@ namespace Rhine
 		ComPtr<ID3D11RenderTargetView> rendertargetView;
 		ComPtr<ID3D11Texture2D> backBuffer;
 		D3D11_VIEWPORT d3d11viewPort;
+		ComPtr<ID3D11RasterizerState> rasterizerState;
 
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		D3D11_BUFFER_DESC trianglebufferDesc;
