@@ -168,27 +168,22 @@ void Rhine::Graphics::Render()
 
 	
 	// drawing square
-	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	d3ddeviceContext->RSSetState(rasterizerState.Get());
 	d3ddeviceContext->OMSetDepthStencilState(depthstencilState.Get(), 0);
 	d3ddeviceContext->IASetInputLayout(rectangleinputLayout.Get());
 	d3ddeviceContext->VSSetShader(vShader.Get(), NULL, 0);
 	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
 
-	
-	DrawRectangle(0.25f, 0.25f);
-	DrawTriangle(0.5f, 0.5f);
-	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	DrawRectangleIndexed();
-
-	
-	/*d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-	d3ddeviceContext->DrawIndexed(6, 0, 0);*/
+	DrawTriangleIndexed();
 	
 
 	dxgiswapChain->Present(1, 0);
 }
 
+// functions for drawing a triangle or rectangle using either
+// vertex drawing or index drawing
 void Rhine::Graphics::DrawTriangle(float x, float y)
 {
 	// vertex data structure
@@ -335,7 +330,71 @@ void Rhine::Graphics::DrawRectangleIndexed()
 	ZeroMemory(&rectangleData, sizeof(rectangleData));
 	rectangleData.pSysMem = indices;
 	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &rectangleData, rectangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
-	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32G32B32_FLOAT, 0);
+	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	d3ddeviceContext->DrawIndexed(std::size(indices), 0, 0);
+}
+
+void Rhine::Graphics::DrawTriangleIndexed()
+{
+	// vertex data structure
+	struct Vertex
+	{
+		struct
+		{
+			float x;
+			float y;
+			float z;
+		} pos;
+
+		struct
+		{
+			float r, g, b;
+		} col;
+	};
+
+	// rectangle vertex buffer data
+	Vertex Triangle[] =
+	{
+		{ -0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
+		{  0.0f,   0.25f, 0.0f,	   1.0f, 0.0f, 0.0f },// top
+		{  0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
+	};
+	ComPtr<ID3D11Buffer> tmpBuffer;
+	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
+	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
+	tmprectanglebufrerDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	tmprectanglebufrerDescription.ByteWidth = sizeof(Triangle);
+	tmprectanglebufrerDescription.Usage = D3D11_USAGE_DEFAULT;
+	tmprectanglebufrerDescription.CPUAccessFlags = 0;
+	tmprectanglebufrerDescription.MiscFlags = 0;
+	D3D11_SUBRESOURCE_DATA tmprectangleData;
+	ZeroMemory(&tmprectangleData, sizeof(tmprectangleData));
+	tmprectangleData.pSysMem = Triangle;
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&tmprectanglebufrerDescription, &tmprectangleData, tmpBuffer.GetAddressOf()), "Failed to create vertex buffer");
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	d3ddeviceContext->IASetVertexBuffers(0, 1, tmpBuffer.GetAddressOf(), &stride, &offset);
+
+	// rectangle index buffer data
+	unsigned int indices[] =
+	{
+		0, 1, 2
+	};
+	ComPtr<ID3D11Buffer> rectangleindexBuffer;
+	D3D11_BUFFER_DESC indexbufferDescription;
+	ZeroMemory(&indexbufferDescription, sizeof(indexbufferDescription));
+	indexbufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexbufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	indexbufferDescription.CPUAccessFlags = 0;
+	indexbufferDescription.MiscFlags = 0;
+	indexbufferDescription.ByteWidth = sizeof(indices);
+	indexbufferDescription.StructureByteStride = sizeof(unsigned int);
+	D3D11_SUBRESOURCE_DATA rectangleData;
+	ZeroMemory(&rectangleData, sizeof(rectangleData));
+	rectangleData.pSysMem = indices;
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &rectangleData, rectangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
+	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	d3ddeviceContext->DrawIndexed(std::size(indices), 0, 0);
 }
 

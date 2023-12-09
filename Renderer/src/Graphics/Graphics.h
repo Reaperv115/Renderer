@@ -52,6 +52,7 @@ namespace Rhine
 		void DrawTriangle(float x, float y);
 		void DrawRectangle(float x, float y);
 		void DrawRectangleIndexed();
+		void DrawTriangleIndexed();
 	private:
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
