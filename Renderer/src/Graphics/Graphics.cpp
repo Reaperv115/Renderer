@@ -94,12 +94,12 @@ void Rhine::Graphics::InitializeScene()
 {
 	
 
-	// triangle vertex buffer data
+	// green triangle vertex buffer data
 	Vertex Triangle[] =
 	{
-		{ -0.5f, -0.5f,  1.0f, 0.0f, 0.0f },// bottom left
-		{ 0.5f,  0.5f,	 0.0f, 1.0f, 0.0f },// top left
-		{  0.5f,  -0.5f,	 0.0f, 0.0f, 1.0f },// top right
+		{ -0.5f,  -0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// bottom left
+		{  0.5f,   0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// top
+		{  0.5f,  -0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// bottom right
 	};
 	D3D11_BUFFER_DESC bufferDescription;
 	ZeroMemory(&bufferDescription, sizeof(bufferDescription));
@@ -115,16 +115,16 @@ void Rhine::Graphics::InitializeScene()
 
 	
 
-	// rectangle vertex buffer data
+	// red rectangle vertex buffer data
 	Vertex Rectangle[] =
 	{
-		{ -0.25f,  -0.25f,     1.0f, 0.0f, 0.0f },// bottom left
-		{ -0.25f,  0.25f,	 1.0f, 0.0f, 0.0f },// top left
-		{ 0.25f,  0.25f,	 1.0f, 0.0f, 0.0f },// top right
+		{ -0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
+		{ -0.25f,   0.25f, 0.0f,	   1.0f, 0.0f, 0.0f },// top left
+		{  0.25f,   0.25f, 0.0f,	   1.0f, 0.0f, 0.0f },// top right
 
-		{  0.25f, 0.25f,  1.0f, 0.0f, 0.0f},
-		{-0.25f, -0.25f, 1.0f, 0.0f, 0.0f},
-		{0.25f, -0.25f, 1.0f, 0.0f, 0.0f}
+		{  0.25f,   0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// top right
+		{ -0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
+		{  0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
 	};
 	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
 	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
@@ -141,7 +141,7 @@ void Rhine::Graphics::InitializeScene()
 	// vertex shader
 	D3D11_INPUT_ELEMENT_DESC rectanglelayoutDesc[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 	UINT numElements = ARRAYSIZE(rectanglelayoutDesc);
@@ -175,11 +175,13 @@ void Rhine::Graphics::Render()
 	d3ddeviceContext->VSSetShader(vShader.Get(), NULL, 0);
 	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
 
-	d3ddeviceContext->IASetVertexBuffers(0, 1, rectangleBuffer.GetAddressOf(), &stride, &offset);
-	d3ddeviceContext->Draw(6, 0);
+	
 	
 	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
 	d3ddeviceContext->Draw(3, 0);
+
+	d3ddeviceContext->IASetVertexBuffers(0, 1, rectangleBuffer.GetAddressOf(), &stride, &offset);
+	d3ddeviceContext->Draw(6, 0);
 
 	
 

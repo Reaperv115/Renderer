@@ -12,6 +12,7 @@ namespace Rhine
 		{
 			float x;
 			float y;
+			float z;
 		} pos;
 
 		struct
