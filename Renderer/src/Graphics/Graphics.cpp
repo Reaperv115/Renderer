@@ -176,20 +176,10 @@ void Rhine::Graphics::Render()
 	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
 
 	
-	
-	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
-	d3ddeviceContext->Draw(3, 0);
-
-	d3ddeviceContext->IASetVertexBuffers(0, 1, rectangleBuffer.GetAddressOf(), &stride, &offset);
-	d3ddeviceContext->Draw(6, 0);
-
-	
-
-	
-
-	/*DrawTriangle(0.5f, 0.5f);
-	DrawRectangle(0.25f, 0.25f);*/
-	//DrawRectangleIndexed();
+	DrawRectangle(0.25f, 0.25f);
+	DrawTriangle(0.5f, 0.5f);
+	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	DrawRectangleIndexed();
 
 	
 	/*d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
@@ -208,6 +198,7 @@ void Rhine::Graphics::DrawTriangle(float x, float y)
 		{
 			float x;
 			float y;
+			float z;
 		} pos;
 
 		struct
@@ -216,30 +207,25 @@ void Rhine::Graphics::DrawTriangle(float x, float y)
 		} col;
 	};
 
-	// triangle vertex buffer data
+	// green triangle vertex buffer data
 	Vertex Triangle[] =
 	{
-		{ -x, -y,  1.0f, 0.0f, 0.0f },// bottom left
-		{ x,  y,	 0.0f, 1.0f, 0.0f },// top left
-		{  x,  -y,	 0.0f, 0.0f, 1.0f },// top right
+		{ -0.5f,  -0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// bottom left
+		{  0.5f,   0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// top
+		{  0.5f,  -0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// bottom right
 	};
-	ComPtr<ID3D11Buffer> tmpBuffer;
-	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
-	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
-	tmprectanglebufrerDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	tmprectanglebufrerDescription.ByteWidth = sizeof(Triangle);
-	tmprectanglebufrerDescription.Usage = D3D11_USAGE_DEFAULT;
-	tmprectanglebufrerDescription.CPUAccessFlags = 0;
-	tmprectanglebufrerDescription.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA tmprectangleData;
-	ZeroMemory(&tmprectangleData, sizeof(tmprectangleData));
-	tmprectangleData.pSysMem = Triangle;
-	RHINE_ASSERT(d3dDevice->CreateBuffer(&tmprectanglebufrerDescription, &tmprectangleData, tmpBuffer.GetAddressOf()), "Failed to create vertex buffer");
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	d3ddeviceContext->IASetVertexBuffers(0, 1, tmpBuffer.GetAddressOf(), &stride, &offset);
-	
+	D3D11_BUFFER_DESC bufferDescription;
+	ZeroMemory(&bufferDescription, sizeof(bufferDescription));
+	bufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDescription.ByteWidth = sizeof(Triangle);
+	bufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	bufferDescription.CPUAccessFlags = 0;
+	bufferDescription.MiscFlags = 0;
+	D3D11_SUBRESOURCE_DATA Data;
+	ZeroMemory(&Data, sizeof(Data));
+	Data.pSysMem = Triangle;
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&bufferDescription, &Data, triangleBuffer.GetAddressOf()), "Failed to create vertex buffer");
+	d3ddeviceContext->IASetVertexBuffers(0, 1, triangleBuffer.GetAddressOf(), &stride, &offset);
 	d3ddeviceContext->Draw(std::size(Triangle), 0);
 }
 
@@ -252,6 +238,51 @@ void Rhine::Graphics::DrawRectangle(float x, float y)
 		{
 			float x;
 			float y;
+			float z;
+		} pos;
+
+		struct
+		{
+			float r, g, b;
+		} col;
+	};
+
+	// red rectangle vertex buffer data
+	Vertex Rectangle[] =
+	{
+		{ -x,  -y, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
+		{ -x,   y, 0.0f,	   1.0f, 0.0f, 0.0f },// top left
+		{  x,   y, 0.0f,	   1.0f, 0.0f, 0.0f },// top right
+
+		{  x,   y, 0.0f,       1.0f, 0.0f, 0.0f },// top right
+		{ -x,  -y, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
+		{  x,  -y, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
+	};
+	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
+	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
+	tmprectanglebufrerDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	tmprectanglebufrerDescription.ByteWidth = sizeof(Rectangle);
+	tmprectanglebufrerDescription.Usage = D3D11_USAGE_DEFAULT;
+	tmprectanglebufrerDescription.CPUAccessFlags = 0;
+	tmprectanglebufrerDescription.MiscFlags = 0;
+	D3D11_SUBRESOURCE_DATA tmprectangleData;
+	ZeroMemory(&tmprectangleData, sizeof(tmprectangleData));
+	tmprectangleData.pSysMem = Rectangle;
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&tmprectanglebufrerDescription, &tmprectangleData, rectangleBuffer.GetAddressOf()), "Failed to create vertex buffer");
+	d3ddeviceContext->IASetVertexBuffers(0, 1, rectangleBuffer.GetAddressOf(), &stride, &offset);
+	d3ddeviceContext->Draw(std::size(Rectangle), 0);
+}
+
+void Rhine::Graphics::DrawRectangleIndexed()
+{
+	// vertex data structure
+	struct Vertex
+	{
+		struct
+		{
+			float x;
+			float y;
+			float z;
 		} pos;
 
 		struct
@@ -263,10 +294,10 @@ void Rhine::Graphics::DrawRectangle(float x, float y)
 	// rectangle vertex buffer data
 	Vertex Rectangle[] =
 	{
-		{ -x,  -y,     1.0f, 0.0f, 0.0f },// bottom left
-		{ -x,  y,	 1.0f, 0.0f, 0.0f },// top left
-		{ x,  y,	 1.0f, 0.0f, 0.0f },// top right
-		{  x, -y,  1.0f, 0.0f, 0.0f}
+		{ -0.25f,  -0.9f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
+		{ -0.25f,   -0.7f, 0.0f,	   1.0f, 0.0f, 0.0f },// top left
+		{  0.25f,   -0.7f, 0.0f,	   1.0f, 0.0f, 0.0f },// top right
+		{  0.25f,  -0.9f, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
 	};
 	ComPtr<ID3D11Buffer> tmpBuffer;
 	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
@@ -284,50 +315,6 @@ void Rhine::Graphics::DrawRectangle(float x, float y)
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	d3ddeviceContext->IASetVertexBuffers(0, 1, tmpBuffer.GetAddressOf(), &stride, &offset);
-	d3ddeviceContext->Draw(std::size(Rectangle), 0);
-}
-
-void Rhine::Graphics::DrawRectangleIndexed()
-{
-	// vertex data structure
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-		} pos;
-
-		struct
-		{
-			float r, g, b;
-		} col;
-	};
-
-	// rectangle vertex buffer data
-	Vertex Rectangle[] =
-	{
-		{ -0.25f,  -0.25f,     0.0f, 0.0f, 1.0f },// bottom left
-		{ -0.25f,  0.25f,	 0.0f, 0.0f, 1.0f },// top left
-		{ 0.25f,  0.25f,	 0.0f, 0.0f, 1.0f },// top right
-		{  0.25f, -0.25f,  0.0f, 0.0f, 1.0f}
-	};
-	ComPtr<ID3D11Buffer> tmpBuffer;
-	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
-	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
-	tmprectanglebufrerDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	tmprectanglebufrerDescription.ByteWidth = sizeof(Rectangle);
-	tmprectanglebufrerDescription.Usage = D3D11_USAGE_DEFAULT;
-	tmprectanglebufrerDescription.CPUAccessFlags = 0;
-	tmprectanglebufrerDescription.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA tmprectangleData;
-	ZeroMemory(&tmprectangleData, sizeof(tmprectangleData));
-	tmprectangleData.pSysMem = Rectangle;
-	RHINE_ASSERT(d3dDevice->CreateBuffer(&tmprectanglebufrerDescription, &tmprectangleData, tmpBuffer.GetAddressOf()), "Failed to create vertex buffer");
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	d3ddeviceContext->IASetVertexBuffers(1, 1, tmpBuffer.GetAddressOf(), &stride, &offset);
 
 	// rectangle index buffer data
 	unsigned int indices[] =
@@ -348,22 +335,7 @@ void Rhine::Graphics::DrawRectangleIndexed()
 	ZeroMemory(&rectangleData, sizeof(rectangleData));
 	rectangleData.pSysMem = indices;
 	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &rectangleData, rectangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
-	// vertex shader
-	D3D11_INPUT_ELEMENT_DESC rectanglelayoutDesc[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-	UINT numElements = ARRAYSIZE(rectanglelayoutDesc);
-
-	// creating vertex shader
-	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(vertexshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read vertex shader");
-	RHINE_ASSERT(d3dDevice->CreateVertexShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, vShader.GetAddressOf()), "Failed to create vertex shader");
-	RHINE_ASSERT(d3dDevice->CreateInputLayout(rectanglelayoutDesc, numElements, shaderBuffer->GetBufferPointer(), shaderBuffer->GetBufferSize(), rectangleinputLayout.GetAddressOf()), "Failed to create input layout");
-
-	// pixel shader
-	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(pixelshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read pixel shader");
-	RHINE_ASSERT(d3dDevice->CreatePixelShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, pShader.GetAddressOf()), "Failed to create pixel shader");
+	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32G32B32_FLOAT, 0);
 	d3ddeviceContext->DrawIndexed(std::size(indices), 0, 0);
 }
 
