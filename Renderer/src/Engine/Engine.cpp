@@ -16,11 +16,14 @@ bool Rhine::Engine::InitEngine(HINSTANCE hInst, std::string className, std::stri
 		ErrorLogger::Log("Failed to initialize graphics");
 		return false;
 	}
+	
 	return true;
 }
 
 void Rhine::Engine::Run()
 {
+	gfx.InitializeScene();
+
 	// run the application
 	while (windowCreation.Run())
 	{
