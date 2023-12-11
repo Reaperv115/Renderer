@@ -93,51 +93,6 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 void Rhine::Graphics::InitializeScene()
 {
 	
-
-	// green triangle vertex buffer data
-	Vertex Triangle[] =
-	{
-		{ -0.5f,  -0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// bottom left
-		{  0.5f,   0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// top
-		{  0.5f,  -0.5f,   1.0f,	  0.0f, 1.0f, 0.0f },// bottom right
-	};
-	D3D11_BUFFER_DESC bufferDescription;
-	ZeroMemory(&bufferDescription, sizeof(bufferDescription));
-	bufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDescription.ByteWidth = sizeof(Triangle);
-	bufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	bufferDescription.CPUAccessFlags = 0;
-	bufferDescription.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA Data;
-	ZeroMemory(&Data, sizeof(Data));
-	Data.pSysMem = Triangle;
-	RHINE_ASSERT(d3dDevice->CreateBuffer(&bufferDescription, &Data, triangleBuffer.GetAddressOf()), "Failed to create vertex buffer");
-
-	
-
-	// red rectangle vertex buffer data
-	Vertex Rectangle[] =
-	{
-		{ -0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
-		{ -0.25f,   0.25f, 0.0f,	   1.0f, 0.0f, 0.0f },// top left
-		{  0.25f,   0.25f, 0.0f,	   1.0f, 0.0f, 0.0f },// top right
-
-		{  0.25f,   0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// top right
-		{ -0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
-		{  0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
-	};
-	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
-	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
-	tmprectanglebufrerDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	tmprectanglebufrerDescription.ByteWidth = sizeof(Rectangle);
-	tmprectanglebufrerDescription.Usage = D3D11_USAGE_DEFAULT;
-	tmprectanglebufrerDescription.CPUAccessFlags = 0;
-	tmprectanglebufrerDescription.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA tmprectangleData;
-	ZeroMemory(&tmprectangleData, sizeof(tmprectangleData));
-	tmprectangleData.pSysMem = Rectangle;
-	RHINE_ASSERT(d3dDevice->CreateBuffer(&tmprectanglebufrerDescription, &tmprectangleData, rectangleBuffer.GetAddressOf()), "Failed to create vertex buffer");
-	
 	// vertex shader
 	D3D11_INPUT_ELEMENT_DESC rectanglelayoutDesc[] =
 	{
@@ -163,6 +118,8 @@ void Rhine::Graphics::Render()
 	// clearing backbuffer to some color
 	float rgba[] = { 1.0f, 1.0, 1.0f, 1.0f };
 	d3ddeviceContext->ClearRenderTargetView(rendertargetView.Get(), rgba);
+
+	// clearing depth stencil buffer
 	d3ddeviceContext->ClearDepthStencilView(depthstencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 
@@ -178,7 +135,7 @@ void Rhine::Graphics::Render()
 	DrawRectangleIndexed();
 	DrawTriangleIndexed();
 	
-
+	// present the buffer to display
 	dxgiswapChain->Present(1, 0);
 }
 
@@ -186,22 +143,6 @@ void Rhine::Graphics::Render()
 // vertex drawing or index drawing
 void Rhine::Graphics::DrawTriangle(float x, float y)
 {
-	// vertex data structure
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		} pos;
-
-		struct
-		{
-			float r, g, b;
-		} col;
-	};
-
 	// green triangle vertex buffer data
 	Vertex Triangle[] =
 	{
@@ -226,22 +167,6 @@ void Rhine::Graphics::DrawTriangle(float x, float y)
 
 void Rhine::Graphics::DrawRectangle(float x, float y)
 {
-	// vertex data structure
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		} pos;
-
-		struct
-		{
-			float r, g, b;
-		} col;
-	};
-
 	// red rectangle vertex buffer data
 	Vertex Rectangle[] =
 	{
@@ -270,29 +195,14 @@ void Rhine::Graphics::DrawRectangle(float x, float y)
 
 void Rhine::Graphics::DrawRectangleIndexed()
 {
-	// vertex data structure
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		} pos;
-
-		struct
-		{
-			float r, g, b;
-		} col;
-	};
 
 	// rectangle vertex buffer data
 	Vertex Rectangle[] =
 	{
-		{ -0.25f,  -0.9f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
-		{ -0.25f,   -0.7f, 0.0f,	   1.0f, 0.0f, 0.0f },// top left
-		{  0.25f,   -0.7f, 0.0f,	   1.0f, 0.0f, 0.0f },// top right
-		{  0.25f,  -0.9f, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
+		{ -0.25f, -0.25f, 0.0f,        1.0f, 0.0f, 0.0f },// bottom left
+		{ -0.25f,  0.25f, 0.0f,	       1.0f, 0.0f, 0.0f },// top left
+		{  0.25f,  0.25f, 0.0f,	       1.0f, 0.0f, 0.0f },// top right
+		{  0.25f, -0.25f, 0.0f,        1.0f, 0.0f, 0.0f } // bottom right
 	};
 	ComPtr<ID3D11Buffer> tmpBuffer;
 	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
@@ -336,28 +246,13 @@ void Rhine::Graphics::DrawRectangleIndexed()
 
 void Rhine::Graphics::DrawTriangleIndexed()
 {
-	// vertex data structure
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		} pos;
-
-		struct
-		{
-			float r, g, b;
-		} col;
-	};
 
 	// rectangle vertex buffer data
 	Vertex Triangle[] =
 	{
-		{ -0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f },// bottom left
-		{  0.0f,   0.25f, 0.0f,	   1.0f, 0.0f, 0.0f },// top
-		{  0.25f,  -0.25f, 0.0f,       1.0f, 0.0f, 0.0f }// bottom right
+		{ -0.5f,  -0.5f,  1.0f,       0.0f, 1.0f, 0.0f },// bottom left
+		{  0.5f,   0.5f,  1.0f,	    0.0f, 1.0f, 0.0f },// top
+		{  0.5f,  -0.5f,  1.0f,       0.0f, 1.0f, 0.0f }// bottom right
 	};
 	ComPtr<ID3D11Buffer> tmpBuffer;
 	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
