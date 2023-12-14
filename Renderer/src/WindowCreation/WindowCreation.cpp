@@ -105,11 +105,11 @@
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
-			timer.Tick();
+			/*timer.Tick();
 			if (!appPaused)
 			{
 				CalculateFrameStats();
-			}
+			}*/
 		}
 
 		
@@ -143,17 +143,6 @@
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
 			break;
-		case WM_ACTIVATE:
-			if (LOWORD(wParam) == WA_INACTIVE)
-			{
-				Rhine::appPaused = true;
-				timer.Stop();
-			}
-			else
-			{
-				Rhine::appPaused = false;
-				timer.Start();
-			}
 		}
 		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}

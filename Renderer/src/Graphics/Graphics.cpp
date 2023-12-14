@@ -269,7 +269,7 @@ void Rhine::Graphics::DrawTriangleIndexed()
 	Vertex Triangle[] =
 	{
 		{ -0.5f,  -0.5f,  1.0f,     0.0f, 1.0f },// bottom left
-		{  0.5f,   0.5f,  1.0f,	    0.5f, 0.0f },// top
+		{  0.2f,   0.9f,  1.0f,	    0.5f, 0.0f },// top
 		{  0.5f,  -0.5f,  1.0f,     1.0f, 1.0f }// bottom right
 	};
 	ComPtr<ID3D11Buffer> tmpBuffer;

@@ -24,9 +24,35 @@ void Rhine::Engine::Run()
 {
 	gfx.InitializeScene();
 
+	
+
 	// run the application
 	while (windowCreation.Run())
 	{
+		clock_t beginFrame = clock();
 		gfx.Render();
+		clock_t endFrame = clock();
+
+		deltaTime += endFrame - beginFrame;
+		frames++;
+
+		if (clocktoMilliseconds(deltaTime) > 1000.0)
+		{
+			frameRate = (double)frames * 0.5 + frameRate * 0.5;
+			frames = 0;
+			deltaTime -= CLOCKS_PER_SEC;
+			averageframetimeMilliseconds = 1000.0 / (frameRate == 0 ? 0.001 : frameRate);
+		}
+
+		std::wostringstream outs;
+		outs.precision(6);
+		outs << mainwndCaption << L" "
+			<< L"FPS: " << averageframetimeMilliseconds;
+		SetWindowText(windowCreation.GetWindowHandle(), outs.str().c_str());
 	}
+}
+
+double Rhine::Engine::clocktoMilliseconds(clock_t ticks)
+{
+	return (ticks / (double)CLOCKS_PER_SEC) * 1000.0;
 }
