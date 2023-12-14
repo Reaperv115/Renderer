@@ -3,6 +3,7 @@
 #include "../WindowCreation/WindowCreation.h"
 
 
+
 namespace Rhine
 {
 	// vertex data structure
@@ -17,8 +18,16 @@ namespace Rhine
 
 		struct
 		{
-			float r, g, b;
+			float u, v;
 		} col;
+	};
+
+	struct ConstantBuffer
+	{
+		struct  
+		{
+			float matrix[4][4];
+		} transform;
 	};
 
 	class Graphics
@@ -35,6 +44,8 @@ namespace Rhine
 		ComPtr<ID3D11Texture2D> depthstencilBuffer;
 		D3D11_TEXTURE2D_DESC depthstencilDescription;
 		ComPtr<ID3D11DepthStencilState> depthstencilState;
+		ComPtr<ID3D11SamplerState> samplerState;
+		ComPtr<ID3D11ShaderResourceView> texture;
 
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		ComPtr<ID3D11Buffer> rectangleBuffer;

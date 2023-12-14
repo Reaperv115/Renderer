@@ -46,10 +46,9 @@
 
 	void Rhine::WindowCreation::CalculateFrameStats()
 	{
-		static int frameCnt = 0;
-		static float timeelapsed = 0.0f;
+		
 		frameCnt++;
-
+		
 		if ((timer.TotalTime() - timeelapsed) >= 1.0f)
 		{
 			float fps = (float)frameCnt;
@@ -62,8 +61,12 @@
 				<< L"Frame Time: " << mspf << L" (ms)";
 			SetWindowText(windowHandle, outs.str().c_str());
 
-			frameCnt = 0;
 			timeelapsed += 1.0f;
+		}
+		else
+		{
+			frameCnt = 0;
+			
 		}
 	}
 	
@@ -101,15 +104,15 @@
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-		}
-		else
-		{
+
 			timer.Tick();
 			if (!appPaused)
 			{
 				CalculateFrameStats();
 			}
 		}
+
+		
 		if (msg.message == WM_QUIT)
 		{
 			UnregisterClass(className.c_str(), applicationInstance);
@@ -140,6 +143,17 @@
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
 			break;
+		case WM_ACTIVATE:
+			if (LOWORD(wParam) == WA_INACTIVE)
+			{
+				Rhine::appPaused = true;
+				timer.Stop();
+			}
+			else
+			{
+				Rhine::appPaused = false;
+				timer.Start();
+			}
 		}
 		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}

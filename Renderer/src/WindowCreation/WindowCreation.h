@@ -4,6 +4,10 @@
 
 namespace Rhine
 {
+	static bool appPaused = false;
+	static Timer timer;
+	static int frameCnt = 0;
+	static float timeelapsed = 0.0f;
 	class WindowCreation
 	{
 	public:
@@ -16,8 +20,7 @@ namespace Rhine
 		std::wstring className;
 		std::wstring windowName;
 		std::wstring mainwndCaption;
-		bool appPaused;
-		Timer timer;
+		
 
 	private:
 		void CalculateFrameStats();

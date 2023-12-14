@@ -2,7 +2,7 @@
 
 namespace Rhine
 {
-	class Timer
+	static class Timer
 	{
 	public:
 		Timer();
