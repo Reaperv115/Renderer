@@ -45,7 +45,9 @@ namespace Rhine
 		D3D11_TEXTURE2D_DESC depthstencilDescription;
 		ComPtr<ID3D11DepthStencilState> depthstencilState;
 		ComPtr<ID3D11SamplerState> samplerState;
-		ComPtr<ID3D11ShaderResourceView> texture;
+		ComPtr<ID3D11ShaderResourceView> GGtexture;
+		ComPtr<ID3D11ShaderResourceView> Marveltexture;
+		ComPtr<ID3D11ShaderResourceView> Doomtexture;
 
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		ComPtr<ID3D11Buffer> rectangleBuffer;

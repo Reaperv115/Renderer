@@ -122,7 +122,9 @@ void Rhine::Graphics::InitializeScene()
 	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(pixelshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read pixel shader");
 	RHINE_ASSERT(d3dDevice->CreatePixelShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, pShader.GetAddressOf()), "Failed to create pixel shader");
 
-	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/GLITC_Background.jpg", nullptr, texture.GetAddressOf()), "Failed to create texture from file");
+	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/Doom-Symbol.jpg", nullptr, Doomtexture.GetAddressOf()), "Failed to create texture from doom logo");
+	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/GLITC_Background.jpg", nullptr, GGtexture.GetAddressOf()), "Failed to create texture from GLITC symbol");
+	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/avengers-symbol.jpg", nullptr, Marveltexture.GetAddressOf()), "Failed to create texture from avengers logo");
 }
 
 void Rhine::Graphics::Render()
@@ -145,7 +147,7 @@ void Rhine::Graphics::Render()
 	d3ddeviceContext->VSSetShader(vShader.Get(), NULL, 0);
 	d3ddeviceContext->PSSetShader(pShader.Get(), NULL, 0);
 
-	d3ddeviceContext->PSSetShaderResources(0, 1, texture.GetAddressOf());
+	
 
 	DrawRectangleIndexed();
 	DrawTriangleIndexed();
@@ -255,6 +257,7 @@ void Rhine::Graphics::DrawRectangleIndexed()
 	ZeroMemory(&rectangleData, sizeof(rectangleData));
 	rectangleData.pSysMem = indices;
 	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &rectangleData, rectangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
+	d3ddeviceContext->PSSetShaderResources(0, 1, Doomtexture.GetAddressOf());
 	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	d3ddeviceContext->DrawIndexed((UINT)std::size(indices), 0, 0);
 }
@@ -304,6 +307,7 @@ void Rhine::Graphics::DrawTriangleIndexed()
 	ZeroMemory(&rectangleData, sizeof(rectangleData));
 	rectangleData.pSysMem = indices;
 	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &rectangleData, rectangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
+	d3ddeviceContext->PSSetShaderResources(0, 1, Marveltexture.GetAddressOf());
 	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	d3ddeviceContext->DrawIndexed((UINT)std::size(indices), 0, 0);
 }
