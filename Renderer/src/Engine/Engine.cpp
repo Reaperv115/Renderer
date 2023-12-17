@@ -30,7 +30,7 @@ void Rhine::Engine::Run()
 	while (windowCreation.Run())
 	{
 		clock_t beginFrame = clock();
-		gfx.Render();
+		gfx.Render(deltaTime);
 		clock_t endFrame = clock();
 
 		deltaTime += endFrame - beginFrame;
