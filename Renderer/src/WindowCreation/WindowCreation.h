@@ -1,13 +1,8 @@
 #pragma once
 #include "../Utilities/ErrorLogger.h"
-#include "../Engine/Timer.h"
 
 namespace Rhine
 {
-	static bool appPaused = false;
-	static Timer timer;
-	static int frameCnt = 0;
-	static float timeelapsed = 0.0f;
 	class WindowCreation
 	{
 	public:
@@ -23,7 +18,6 @@ namespace Rhine
 		
 
 	private:
-		void CalculateFrameStats();
 		void CreateDebugConsoleWindow();
 		void RegisterWindowClass();
 

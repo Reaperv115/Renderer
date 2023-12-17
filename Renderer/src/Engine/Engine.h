@@ -1,7 +1,6 @@
 #pragma once
 #include "../WindowCreation/WindowCreation.h"
 #include "../Graphics/Graphics.h"
-#include "Timer.h"
 
 namespace Rhine
 {
@@ -10,6 +9,7 @@ namespace Rhine
 	public:
 		bool InitEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height);
 		void Run();
+		clock_t GetDeltaTtime() const;
 	private:
 		double clocktoMilliseconds(clock_t ticks);
 	private:

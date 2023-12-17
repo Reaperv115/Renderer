@@ -44,31 +44,6 @@
 		return true;
 	}
 
-	void Rhine::WindowCreation::CalculateFrameStats()
-	{
-		
-		frameCnt++;
-		
-		if ((timer.TotalTime() - timeelapsed) >= 1.0f)
-		{
-			float fps = (float)frameCnt;
-			float mspf = 1000.0f / fps;
-
-			std::wostringstream outs;
-			outs.precision(6);
-			outs << mainwndCaption << L" "
-				<< L"FPS: " << fps << L" "
-				<< L"Frame Time: " << mspf << L" (ms)";
-			SetWindowText(windowHandle, outs.str().c_str());
-
-			timeelapsed += 1.0f;
-		}
-		else
-		{
-			frameCnt = 0;
-			
-		}
-	}
 	
 
 	void Rhine::WindowCreation::CreateDebugConsoleWindow()

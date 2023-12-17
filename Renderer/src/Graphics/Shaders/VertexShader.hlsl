@@ -10,10 +10,15 @@ struct VS_OUTPUT
 	float4 position : SV_POSITION;
 };
 
+cbuffer WorldMat
+{
+	matrix worldMat;
+};
+
 VS_OUTPUT main(VS_INPUT vsIn)
 {
 	VS_OUTPUT output;
-	output.position = float4(vsIn.pos, 1.0f);
+	output.position = mul(float4(vsIn.pos, 1.0f), worldMat);
 	output.texcoord = vsIn.texCoord;
 	return output;
 }

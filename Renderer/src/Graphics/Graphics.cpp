@@ -104,6 +104,12 @@ bool Rhine::Graphics::InitializeDirectX(int width, int height, HWND handle)
 
 void Rhine::Graphics::InitializeScene()
 {
+	// loading in textures
+	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/Doom-Symbol.jpg", nullptr, Doomtexture.GetAddressOf()), "Failed to create texture from doom logo");
+	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/GLITC_Background.jpg", nullptr, GGtexture.GetAddressOf()), "Failed to create texture from GLITC symbol");
+	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/avengers-logo.jpg", nullptr, Marveltexture.GetAddressOf()), "Failed to create texture from avengers logo");
+
+	
 	
 	// vertex shader
 	D3D11_INPUT_ELEMENT_DESC rectanglelayoutDesc[] =
@@ -122,9 +128,10 @@ void Rhine::Graphics::InitializeScene()
 	RHINE_ASSERT(D3DReadFileToBlob(StringConverter::StringtoWideString(pixelshaderPath).c_str(), shaderBuffer.GetAddressOf()), "Failed to read pixel shader");
 	RHINE_ASSERT(d3dDevice->CreatePixelShader(shaderBuffer.Get()->GetBufferPointer(), shaderBuffer.Get()->GetBufferSize(), NULL, pShader.GetAddressOf()), "Failed to create pixel shader");
 
-	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/Doom-Symbol.jpg", nullptr, Doomtexture.GetAddressOf()), "Failed to create texture from doom logo");
-	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/GLITC_Background.jpg", nullptr, GGtexture.GetAddressOf()), "Failed to create texture from GLITC symbol");
-	RHINE_ASSERT(DirectX::CreateWICTextureFromFile(d3dDevice.Get(), L"Textures/avengers-symbol.jpg", nullptr, Marveltexture.GetAddressOf()), "Failed to create texture from avengers logo");
+	
+	
+	
+	
 }
 
 void Rhine::Graphics::Render()
@@ -136,7 +143,7 @@ void Rhine::Graphics::Render()
 	// clearing depth stencil buffer
 	d3ddeviceContext->ClearDepthStencilView(depthstencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-
+	
 	
 	// drawing square
 	d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -150,7 +157,7 @@ void Rhine::Graphics::Render()
 	
 
 	DrawRectangleIndexed();
-	DrawTriangleIndexed();
+	//DrawTriangleIndexed();
 	
 	// present the buffer to display
 	dxgiswapChain->Present(1, 0);
@@ -259,6 +266,24 @@ void Rhine::Graphics::DrawRectangleIndexed()
 	RHINE_ASSERT(d3dDevice->CreateBuffer(&indexbufferDescription, &rectangleData, rectangleindexBuffer.GetAddressOf()), "Failed to create index buffer");
 	d3ddeviceContext->PSSetShaderResources(0, 1, Doomtexture.GetAddressOf());
 	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	transform.worldMatrix = DirectX::XMMatrixRotationZ(.1);
+	XMMatrixTranspose(transform.worldMatrix);
+
+	D3D11_BUFFER_DESC constasntbufferDescription;
+	ZeroMemory(&constasntbufferDescription, sizeof(constasntbufferDescription));
+	constasntbufferDescription.ByteWidth = sizeof(transform);
+	constasntbufferDescription.Usage = D3D11_USAGE_DYNAMIC;
+	constasntbufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constasntbufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constasntbufferDescription.MiscFlags = 0;
+	constasntbufferDescription.StructureByteStride = 0u;
+	D3D11_SUBRESOURCE_DATA transformCBData;
+	ZeroMemory(&transformCBData, sizeof(transformCBData));
+	transformCBData.pSysMem = &transform;
+	RHINE_ASSERT(d3dDevice->CreateBuffer(&constasntbufferDescription, &transformCBData, constantBuffer.GetAddressOf()), "Failed to create constant buffer");
+
+	d3ddeviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 	d3ddeviceContext->DrawIndexed((UINT)std::size(indices), 0, 0);
 }
 

@@ -1,35 +1,13 @@
 #pragma once
 #include "../Utilities/ErrorLogger.h"
-#include "../WindowCreation/WindowCreation.h"
+#include "../Utilities/Vertex.h"
+#include "../Utilities/Matrices.h"
 
 
 
 namespace Rhine
 {
-	// vertex data structure
-	struct Vertex
-	{
-		struct
-		{
-			float x;
-			float y;
-			float z;
-		} pos;
-
-		struct
-		{
-			float u, v;
-		} col;
-	};
-
-	struct ConstantBuffer
-	{
-		struct  
-		{
-			float matrix[4][4];
-		} transform;
-	};
-
+	
 	class Graphics
 	{
 		ComPtr<ID3D11Device> d3dDevice;
@@ -49,8 +27,11 @@ namespace Rhine
 		ComPtr<ID3D11ShaderResourceView> Marveltexture;
 		ComPtr<ID3D11ShaderResourceView> Doomtexture;
 
+		Rhine::Transform transform;
+
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		ComPtr<ID3D11Buffer> rectangleBuffer;
+		ComPtr<ID3D11Buffer> constantBuffer;
 
 		std::string vertexshaderPath = "../bin/x64-Debug/Renderer/VertexShader.cso";
 		std::string pixelshaderPath = "../bin/x64-Debug/Renderer/PixelShader.cso";

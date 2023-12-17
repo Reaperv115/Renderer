@@ -47,9 +47,15 @@ void Rhine::Engine::Run()
 		std::wostringstream outs;
 		outs.precision(6);
 		outs << mainwndCaption << L" "
-			<< L"FPS: " << averageframetimeMilliseconds;
+			<< L"FPS: " << averageframetimeMilliseconds << L" "
+			<< L"Frames: " << frames;
 		SetWindowText(windowCreation.GetWindowHandle(), outs.str().c_str());
 	}
+}
+
+clock_t Rhine::Engine::GetDeltaTtime() const
+{
+	return deltaTime;
 }
 
 double Rhine::Engine::clocktoMilliseconds(clock_t ticks)
