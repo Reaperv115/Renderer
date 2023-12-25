@@ -23,42 +23,13 @@ bool Rhine::Engine::InitEngine(HINSTANCE hInst, std::string className, std::stri
 void Rhine::Engine::Run()
 {
 	gfx.InitializeScene();
-
-	
-
 	// run the application
 	while (windowCreation.Run())
 	{
-		clock_t beginFrame = clock();
+		auto now = std::chrono::steady_clock::now();
+		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastUpdate).count() / CLOCKS_PER_SEC;
+		std::cout << deltaTime << std::endl;
 		gfx.Render(deltaTime);
-		clock_t endFrame = clock();
-
-		deltaTime += endFrame - beginFrame;
-		frames++;
-
-		if (clocktoMilliseconds(deltaTime) > 1000.0)
-		{
-			frameRate = (double)frames * 0.5 + frameRate * 0.5;
-			frames = 0;
-			deltaTime -= CLOCKS_PER_SEC;
-			averageframetimeMilliseconds = 1000.0 / (frameRate == 0 ? 0.001 : frameRate);
-		}
-
-		std::wostringstream outs;
-		outs.precision(6);
-		outs << mainwndCaption << L" "
-			<< L"FPS: " << averageframetimeMilliseconds << L" "
-			<< L"Frames: " << frames;
-		SetWindowText(windowCreation.GetWindowHandle(), outs.str().c_str());
+		lastUpdate = now;
 	}
-}
-
-clock_t Rhine::Engine::GetDeltaTtime() const
-{
-	return deltaTime;
-}
-
-double Rhine::Engine::clocktoMilliseconds(clock_t ticks)
-{
-	return (ticks / (double)CLOCKS_PER_SEC) * 1000.0;
 }

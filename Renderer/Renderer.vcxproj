@@ -147,6 +147,7 @@
     <ClCompile Include="src\Utilities\ErrorLogger.cpp" />
     <ClCompile Include="src\Utilities\StringConverter.cpp" />
     <ClCompile Include="src\WindowCreation\WindowCreation.cpp" />
+    <ClCompile Include="src\Utilities\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Engine.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="src\Utilities\StringConverter.h" />
     <ClInclude Include="src\Utilities\Vertex.h" />
     <ClInclude Include="src\WindowCreation\WindowCreation.h" />
+    <ClInclude Include="src\Utilities\Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Graphics\Shaders\PixelShader.hlsl">

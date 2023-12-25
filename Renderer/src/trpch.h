@@ -6,6 +6,9 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <chrono>
+
+#include <algorithm>
 
 #include <d3d11.h>
 #include <dxgi.h>

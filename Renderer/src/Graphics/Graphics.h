@@ -42,10 +42,10 @@ namespace Rhine
 	public:
 		bool InitializeDirectX(int width, int height, HWND handle);
 		void InitializeScene();
-		void Render(clock_t deltatime);
+		void Render(double deltatime);
 		void DrawTriangle(float x, float y);
 		void DrawRectangle(float x, float y);
-		void DrawRectangleIndexed(clock_t deltatime);
+		void DrawRectangleIndexed(double deltatime);
 		void DrawTriangleIndexed();
 	private:
 		UINT stride = sizeof(Vertex);

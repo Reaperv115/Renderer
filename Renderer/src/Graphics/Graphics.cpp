@@ -134,7 +134,7 @@ void Rhine::Graphics::InitializeScene()
 	
 }
 
-void Rhine::Graphics::Render(clock_t deltatime)
+void Rhine::Graphics::Render(double deltatime)
 {
 	// clearing backbuffer to some color
 	float rgba[] = { 1.0f, 1.0, 1.0f, 1.0f };
@@ -217,7 +217,7 @@ void Rhine::Graphics::DrawRectangle(float x, float y)
 	d3ddeviceContext->Draw((UINT)std::size(Rectangle), 0);
 }
 
-void Rhine::Graphics::DrawRectangleIndexed(clock_t deltatime)
+void Rhine::Graphics::DrawRectangleIndexed(double deltatime)
 {
 
 	// rectangle vertex buffer data
@@ -267,7 +267,8 @@ void Rhine::Graphics::DrawRectangleIndexed(clock_t deltatime)
 	d3ddeviceContext->PSSetShaderResources(0, 1, Doomtexture.GetAddressOf());
 	d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
-	transform.worldMatrix = DirectX::XMMatrixRotationZ(deltatime);
+	float speed = .05f;
+	transform.worldMatrix = DirectX::XMMatrixRotationZ(DirectX::XMConvertToDegrees(deltatime));
 	XMMatrixTranspose(transform.worldMatrix);
 
 	D3D11_BUFFER_DESC constasntbufferDescription;

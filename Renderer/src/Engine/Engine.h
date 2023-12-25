@@ -9,15 +9,12 @@ namespace Rhine
 	public:
 		bool InitEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height);
 		void Run();
-		clock_t GetDeltaTtime() const;
 	private:
-		double clocktoMilliseconds(clock_t ticks);
-	private:
-		clock_t deltaTime = 0;
-		unsigned int frames = 0;
-		double frameRate = 30;
-		double averageframetimeMilliseconds = 33.333;
-		std::wstring mainwndCaption;
+		double time = 0.0;
+		double deltaTime = 0;
+		std::chrono::steady_clock::time_point lastUpdate;
+		unsigned int frameTime = 0;
+		long diff;
 	private:
 		WindowCreation windowCreation;
 		Graphics gfx;
