@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Rhine
+namespace glitc
 {
 	// vertex data structure
 	struct Vertex

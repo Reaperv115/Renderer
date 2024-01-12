@@ -1,6 +1,6 @@
 #pragma once
 #include "StringConverter.h"
-namespace Rhine
+namespace glitc
 {
 	class ErrorLogger
 	{

@@ -1,7 +1,7 @@
 #include "trpch.h"
 #include "Engine.h"
 
-bool Rhine::Engine::InitEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height)
+bool glitc::Engine::InitEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height)
 {
 	// initialize rendering window
 	if (!windowCreation.InitializeWindow(hInst, className, windowName, width, height))
@@ -20,16 +20,36 @@ bool Rhine::Engine::InitEngine(HINSTANCE hInst, std::string className, std::stri
 	return true;
 }
 
-void Rhine::Engine::Run()
+void glitc::Engine::Run()
 {
 	gfx.InitializeScene();
 	// run the application
 	while (windowCreation.Run())
 	{
-		auto now = std::chrono::steady_clock::now();
-		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastUpdate).count() / CLOCKS_PER_SEC;
-		std::cout << deltaTime << std::endl;
-		gfx.Render(deltaTime);
-		lastUpdate = now;
+		/*auto now = std::chrono::steady_clock::now();
+		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastUpdate).count() / CLOCKS_PER_SEC;*/
+		timer.Signal();
+		if (GetAsyncKeyState(0x57))
+		{
+			std::cout << "moving forwards" << std::endl;
+			gfx.camera.AdjustPosition(gfx.camera.GetForwardVector() * timer.Delta() * cameraspeed);
+		}
+		if (GetAsyncKeyState(0x53))
+		{
+			std::cout << "moving backwards" << std::endl;
+			gfx.camera.AdjustPosition(gfx.camera.GetBackwardsVector() * timer.Delta() * cameraspeed);
+		}
+		if (GetAsyncKeyState(0x41))
+		{
+			std::cout << "moving to the left" << std::endl;
+			gfx.camera.AdjustPosition(gfx.camera.GetLeftVector() * timer.Delta() * cameraspeed);
+		}
+		if (GetAsyncKeyState(0x44))
+		{
+			std::cout << "moving to the right" << std::endl;
+			gfx.camera.AdjustPosition(gfx.camera.GetRightVector() * timer.Delta() * cameraspeed);
+		}
+		gfx.Render();
+		//lastUpdate = now;
 	}
 }

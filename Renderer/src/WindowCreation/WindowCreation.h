@@ -1,7 +1,7 @@
 #pragma once
 #include "../Utilities/ErrorLogger.h"
 
-namespace Rhine
+namespace glitc
 {
 	class WindowCreation
 	{

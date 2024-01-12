@@ -1,6 +1,8 @@
+#pragma pack_matrix(row_major)
+
 struct VS_INPUT
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
 	float2 texCoord : TEXCOORD;
 };
 
@@ -10,15 +12,17 @@ struct VS_OUTPUT
 	float4 position : SV_POSITION;
 };
 
-cbuffer WorldMat
+cbuffer WorldMat : register(b0)
 {
-	matrix worldMat;
+	float4x4 mat;
 };
 
 VS_OUTPUT main(VS_INPUT vsIn)
 {
 	VS_OUTPUT output;
-	output.position = mul(float4(vsIn.pos, 1.0f), worldMat);
+	vsIn.pos = mul(vsIn.pos, mat);
+
+	output.position = vsIn.pos;
 	output.texcoord = vsIn.texCoord;
 	return output;
 }

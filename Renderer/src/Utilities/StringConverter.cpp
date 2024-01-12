@@ -1,6 +1,6 @@
 #include "trpch.h"
 #include "StringConverter.h"
-namespace Rhine
+namespace glitc
 {
 	std::wstring StringConverter::StringtoWideString(std::string str)
 	{

@@ -1,7 +1,7 @@
 #include "trpch.h"
 #include "WindowCreation.h"
 
-	bool Rhine::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height)
+	bool glitc::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height)
 	{
 		// creating console window to debug
 		CreateDebugConsoleWindow();
@@ -10,8 +10,8 @@
 		applicationInstance = inst;
 
 		// naming the window class and window itself
-		this->className = Rhine::StringConverter::StringtoWideString(className);
-		this->windowName = Rhine::StringConverter::StringtoWideString(windowName);
+		this->className = glitc::StringConverter::StringtoWideString(className);
+		this->windowName = glitc::StringConverter::StringtoWideString(windowName);
 
 		// registering window class
 		RegisterWindowClass();
@@ -33,7 +33,7 @@
 		// checking to see if it was created successfully
 		if (this->windowHandle == NULL)
 		{
-			Rhine::ErrorLogger::Log("Failed to initialize window handle");
+			glitc::ErrorLogger::Log("Failed to initialize window handle");
 			return false;
 		}
 		else
@@ -46,7 +46,7 @@
 
 	
 
-	void Rhine::WindowCreation::CreateDebugConsoleWindow()
+	void glitc::WindowCreation::CreateDebugConsoleWindow()
 	{
 		AllocConsole();
 		auto obj = freopen("CONIN$", "r", stdin);
@@ -54,7 +54,7 @@
 		auto obj3 = freopen("CONOUT$", "w", stderr);
 	}
 
-	void Rhine::WindowCreation::RegisterWindowClass()
+	void glitc::WindowCreation::RegisterWindowClass()
 	{
 		WNDCLASSEX wc;
 		ZeroMemory(&wc, sizeof(WNDCLASSEX));
@@ -66,12 +66,12 @@
 		RegisterClassEx(&wc);
 	}
 
-	HWND Rhine::WindowCreation::GetWindowHandle()
+	HWND glitc::WindowCreation::GetWindowHandle()
 	{
 		return this->windowHandle;
 	}
 
-	bool Rhine::WindowCreation::Run()
+	bool glitc::WindowCreation::Run()
 	{
 		// running the application
 		MSG msg = { 0 };
@@ -97,7 +97,7 @@
 		return true;
 	}
 
-	LRESULT CALLBACK Rhine::WindowCreation::WindowProcedures(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK glitc::WindowCreation::WindowProcedures(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (Msg)
 		{

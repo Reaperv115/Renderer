@@ -1,7 +1,7 @@
 #include "trpch.h"
 #include "ErrorLogger.h"
 
-namespace Rhine
+namespace glitc
 {
 	void ErrorLogger::Log(std::string message)
 	{

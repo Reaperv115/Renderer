@@ -2,12 +2,14 @@
 #include "../Utilities/ErrorLogger.h"
 #include "../Utilities/Vertex.h"
 #include "../Utilities/Matrices.h"
+#include "../Engine/XTime.h"
+#include "../Engine/Camera.h"
 
 
 
-namespace Rhine
+namespace glitc
 {
-	
+	namespace DX = DirectX;
 	class Graphics
 	{
 		ComPtr<ID3D11Device> d3dDevice;
@@ -27,7 +29,7 @@ namespace Rhine
 		ComPtr<ID3D11ShaderResourceView> Marveltexture;
 		ComPtr<ID3D11ShaderResourceView> Doomtexture;
 
-		Rhine::Transform transform;
+		glitc::Transform constantbufferData;
 
 		ComPtr<ID3D11Buffer> triangleBuffer;
 		ComPtr<ID3D11Buffer> rectangleBuffer;
@@ -39,10 +41,16 @@ namespace Rhine
 		ComPtr<ID3D11VertexShader> vShader;
 		ComPtr<ID3D11PixelShader> pShader;
 		ComPtr<ID3D11InputLayout> rectangleinputLayout;
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+
+		XTime timer;
+	public:
+		Camera camera;
 	public:
 		bool InitializeDirectX(int width, int height, HWND handle);
 		void InitializeScene();
-		void Render(double deltatime);
+		void Render();
 		void DrawTriangle(float x, float y);
 		void DrawRectangle(float x, float y);
 		void DrawRectangleIndexed(double deltatime);
@@ -50,11 +58,14 @@ namespace Rhine
 	private:
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
+
+		
+		
 	};
 
 	
 }
 
 // error-checking macro
-#define RHINE_ASSERT(hr, message) if (FAILED(hr)) {ErrorLogger::Log(hr, message);} 
+#define glitc_ASSERT(hr, message) if (FAILED(hr)) {ErrorLogger::Log(hr, message);} 
 
