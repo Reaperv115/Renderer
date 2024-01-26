@@ -1,18 +1,17 @@
 #pragma once
-#include "../WindowCreation/WindowCreation.h"
+#include "../WindowCreation/D3DApplication.h"
 #include "../Graphics/Graphics.h"
 #include "XTime.h"
 
 namespace glitc
 {
-	class Engine
+	class Engine : public D3DApplication
 	{
 	public:
-		bool InitEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height);
+		bool InitializeEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height);
+		void Update();
 		void Run();
 	private:
-		WindowCreation windowCreation;
-		Graphics gfx;
 		XTime timer;
 	private:
 		float cameraspeed = 5.0f;

@@ -3,6 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
+#include <windowsx.h>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -10,6 +11,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <queue>
 
 #include <d3d11.h>
 #include <dxgi.h>
