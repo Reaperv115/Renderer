@@ -15,6 +15,7 @@ namespace glitc
 		void OnWheelUp(int x, int y);
 		void OnWheelDown(int x, int y);
 		void OnMouseMove(int x, int y);
+		void OnMouseMoveRaw(int x, int y);
 		bool IsLeftButtonDown(int x, int y);
 		bool IsRightButtonDown(int x, int y);
 		int GetXPos() const;

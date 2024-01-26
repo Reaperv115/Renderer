@@ -8,16 +8,6 @@ glitc::D3DApplication::D3DApplication()
 
 }
 
-HINSTANCE glitc::D3DApplication::GetApplicationInstance() const
-{
-	return hInst;
-}
-
-HWND glitc::D3DApplication::GetWindowHandle() const
-{
-	return windowHandle;
-}
-
 bool glitc::D3DApplication::InitializeGraphicsAPI(float width, float height, HWND handle)
 {
 	if (!gfx->InitializeDirectX(width, height, handle))

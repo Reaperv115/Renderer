@@ -22,6 +22,38 @@ bool glitc::Engine::InitializeEngine(HINSTANCE hInst, std::string className, std
 
 void glitc::Engine::Update()
 {
+	// camera movement
+	if (GetAsyncKeyState(0x57))
+	{
+		std::cout << "moving forwards" << std::endl;
+		gfx->camera.AdjustPosition(gfx->camera.GetForwardVector() * timer.SmoothDelta() * cameraspeed);
+	}
+	if (GetAsyncKeyState(0x53))
+	{
+		std::cout << "moving backwards" << std::endl;
+		gfx->camera.AdjustPosition(gfx->camera.GetBackwardsVector() * timer.SmoothDelta() * cameraspeed);
+	}
+	if (GetAsyncKeyState(0x41))
+	{
+		std::cout << "moving to the left" << std::endl;
+		gfx->camera.AdjustPosition(gfx->camera.GetLeftVector() * timer.SmoothDelta() * cameraspeed);
+	}
+	if (GetAsyncKeyState(0x44))
+	{
+		std::cout << "moving to the right" << std::endl;
+		gfx->camera.AdjustPosition(gfx->camera.GetRightVector() * timer.SmoothDelta() * cameraspeed);
+	}
+
+	while (!windowCreation->GetKeyboardClassRef()->CharBufferIsEmpty())
+	{
+		unsigned char ch = windowCreation->GetKeyboardClassRef()->ReadChar();
+		std::string outmsg = "Char: ";
+		outmsg += ch;
+		outmsg += '\n';
+		std::cout << outmsg;
+	}
+
+	// extracting and printing mouse position
 	while (!windowCreation->GetMouseClassRef()->EventBufferisEmpty())
 	{
 		MouseEvent me = windowCreation->GetMouseClassRef()->ReadEvent();
@@ -37,34 +69,12 @@ void glitc::Engine::Update()
 void glitc::Engine::Run()
 {
 	gfx->InitializeScene();
+
 	// run the application
 	while (windowCreation->Run())
 	{
-		/*auto now = std::chrono::steady_clock::now();
-		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastUpdate).count() / CLOCKS_PER_SEC;*/
 		timer.Signal();
-		if (GetAsyncKeyState(0x57))
-		{
-			std::cout << "moving forwards" << std::endl;
-			gfx->camera.AdjustPosition(gfx->camera.GetForwardVector() * timer.SmoothDelta() * cameraspeed);
-		}
-		if (GetAsyncKeyState(0x53))
-		{
-			std::cout << "moving backwards" << std::endl;
-			gfx->camera.AdjustPosition(gfx->camera.GetBackwardsVector() * timer.SmoothDelta() * cameraspeed);
-		}
-		if (GetAsyncKeyState(0x41))
-		{
-			std::cout << "moving to the left" << std::endl;
-			gfx->camera.AdjustPosition(gfx->camera.GetLeftVector() * timer.SmoothDelta() * cameraspeed);
-		}
-		if (GetAsyncKeyState(0x44))
-		{
-			std::cout << "moving to the right" << std::endl;
-			gfx->camera.AdjustPosition(gfx->camera.GetRightVector() * timer.SmoothDelta() * cameraspeed);
-		}
 		Update();
 		gfx->Render();
-		//lastUpdate = now;
 	}
 }

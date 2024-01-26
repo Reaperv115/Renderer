@@ -137,6 +137,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Engine\Keyboard\KeyboardClass.cpp" />
+    <ClCompile Include="src\Engine\Keyboard\KeyboardEvent.cpp" />
     <ClCompile Include="src\WindowCreation\D3DApplication.cpp" />
     <ClCompile Include="src\Engine\Mouse\MouseClass.cpp" />
     <ClCompile Include="src\Engine\Camera.cpp" />
@@ -154,6 +156,8 @@
     <ClCompile Include="src\WindowCreation\WindowCreation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Engine\Keyboard\KeyboardClass.h" />
+    <ClInclude Include="src\Engine\Keyboard\KeyboardEvent.h" />
     <ClInclude Include="src\WindowCreation\D3DApplication.h" />
     <ClInclude Include="src\Engine\Mouse\MouseClass.h" />
     <ClInclude Include="src\Engine\Camera.h" />

@@ -11,14 +11,11 @@ namespace glitc
 	{
 	public:
 		D3DApplication();
-		HINSTANCE GetApplicationInstance() const;
-		HWND GetWindowHandle() const;
 	protected:
 		WindowCreation* windowCreation = new WindowCreation();
 		Graphics* gfx = new Graphics();
 
 		HINSTANCE hInst;
-		HWND windowHandle;
 
 		bool InitializeRenderWindow(HINSTANCE hInst, std::string className, std::string windowName, float width, float height);
 		bool InitializeGraphicsAPI(float width, float height, HWND handle);
