@@ -1,5 +1,6 @@
 #include "trpch.h"
 #include "WindowCreation.h"
+#include "D3DApplication.h"
 
 
 glitc::WindowCreation::WindowCreation()
@@ -11,10 +12,10 @@ glitc::WindowCreation::WindowCreation()
 }
 
 
-bool glitc::WindowCreation::InitializeWindow(HINSTANCE inst, std::string className, std::string windowName, int width, int height)
+bool glitc::WindowCreation::InitializeWindow(D3DApplication* d3dApp, HINSTANCE inst, std::string className, std::string windowName, int width, int height)
 	{
 		// creating console window to debug
-		CreateDebugConsoleWindow();
+		this->CreateDebugConsoleWindow();
 
 		// catching instance to application
 		this->applicationInstance = inst;
@@ -24,21 +25,21 @@ bool glitc::WindowCreation::InitializeWindow(HINSTANCE inst, std::string classNa
 		this->windowName = glitc::StringConverter::StringtoWideString(windowName);
 
 		// registering window class
-		RegisterWindowClass();
+		this->RegisterWindowClass();
 
 		// creating render window
 		this->windowHandle = CreateWindowEx(0, 
 			this->className.c_str(), 
 			this->windowName.c_str(), 
 			WS_OVERLAPPEDWINDOW, 
-			xPosition,
-			yPosition,
+			this->xPosition,
+			this->yPosition,
 			width,
 			height,
 			NULL,
 			NULL,
 			this->applicationInstance,
-			(LPVOID)this);
+			d3dApp);
 
 		// checking to see if it was created successfully
 		if (this->windowHandle == NULL)
@@ -76,7 +77,7 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 		wc.lpszMenuName = this->windowName.c_str();
 		wc.hInstance = this->applicationInstance;
 		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.lpfnWndProc = ProcessMessageSetup;
+		wc.lpfnWndProc = HandleMessageSetup;
 		RegisterClassEx(&wc);
 	}
 
@@ -87,12 +88,12 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 
 	glitc::MouseClass* glitc::WindowCreation::GetMouseClassRef() const
 	{
-		return this->mc;
+		return this->mouse;
 	}
 
 	glitc::KeyboardClass* glitc::WindowCreation::GetKeyboardClassRef() const
 	{
-		return kbc;
+		return this->keyboard;
 	}
 
 	HINSTANCE glitc::WindowCreation::GetApplicationInstance() const
@@ -122,79 +123,30 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 
 	// windows message processing functions
 	// WindowProc will handle input from mouse and keyboard
-	LRESULT CALLBACK glitc::WindowCreation::ProcessMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
+	LRESULT CALLBACK glitc::WindowCreation::HandleMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
 	{
 		// use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
 		if (msg == WM_NCCREATE)
 		{
 			// extract ptr to window from class from creation data
 			const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lPara);
-			WindowCreation* const pWnd = reinterpret_cast<WindowCreation*>(pCreate->lpCreateParams);
+			D3DApplication* const pWnd = reinterpret_cast<D3DApplication*>(pCreate->lpCreateParams);
 			//sanity check
 			assert(pWnd != nullptr);
 			// set WinAPI-managed user data to store ptr to window class
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
 			// set message proc to normal handler now that setup is finished
-			SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&WindowCreation::_ProcessMessageSetup));
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(_HandleMessageRedirect));
 			// forward message to window class handler
 			return pWnd->WindowProc(hwnd, msg, wPara, lPara);
 		}
 		// if we get a message before the WM_NCCREATE message, handle with default handler
 		return DefWindowProc(hwnd, msg, wPara, lPara);
 	}
-	LRESULT CALLBACK glitc::WindowCreation::_ProcessMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
+	LRESULT CALLBACK glitc::WindowCreation::_HandleMessageRedirect(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
 	{
 		// retrieve ptr to window class
-		WindowCreation* const pWnd = reinterpret_cast<WindowCreation*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		D3DApplication* const pWnd = reinterpret_cast<D3DApplication*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 		// forward message to window class handler
 		return pWnd->WindowProc(hwnd, msg, wPara, lPara);
-	}
-	LRESULT CALLBACK glitc::WindowCreation::WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-	{
-		switch (Msg)
-		{
-		case WM_CHAR:
-		{
-			unsigned char ch = static_cast<unsigned char>(wParam);
-			if (kbc->IsCharsAutoRepeats())
-			{
-				kbc->OnChar(ch);
-			}
-			else
-			{
-				const bool wasPressed = lParam & 0x40000000;
-				if (!wasPressed)
-				{
-					kbc->OnChar(ch);
-				}
-			}
-			return 0;
-		}
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		case WM_CLOSE:
-			DestroyWindow(hwnd);
-			break;
-		case WM_MOUSEMOVE:
-		{
-			int x = GET_X_LPARAM(lParam);
-			int y = GET_Y_LPARAM(lParam);
-			mc->OnMouseMove(x, y);
-			break;
-		}
-		// WM_PAINT
-			/*case WM_PAINT:
-			{
-				PAINTSTRUCT ps;
-				HDC hdc = BeginPaint(hwnd, &ps);
-				RECT rect;
-				GetClientRect(hwnd, &rect);
-				HBRUSH brush = CreateSolidBrush(RGB(0, 0, 255));
-				FillRect(hdc, &rect, brush);
-				EndPaint(hwnd, &ps);
-				break;
-			}*/
-		}
-		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}

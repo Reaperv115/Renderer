@@ -26,8 +26,8 @@ namespace glitc
 		MouseEvent ReadEvent();
 	private:
 		std::queue<MouseEvent> eventBuffer;
-		bool isleftPressed, isrightPressed, ismPressed;
-		int x, y;
+		bool isleftPressed = false, isrightPressed = false, ismPressed = false;
+		int x = 0, y = 0;
 	};
 }
 

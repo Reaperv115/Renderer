@@ -31,6 +31,8 @@ namespace glitc
 		MouseEvent();
 		MouseEvent(EventType type, int x, int y);
 		MousePoint GetPos() const;
+		bool IsValid() const;
+		EventType GetType() const;
 		int GetPosX() const;
 		int GetPosY() const;
 	private:

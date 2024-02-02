@@ -16,9 +16,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	float width = 800.0f;
 	float height = 600.0f;
-	glitc::Engine engine;
-	engine.InitializeEngine(hInstance, "Engine", "Engine", width, height);
-	engine.Run();
+	glitc::Engine* engine = new glitc::Engine();
+	engine->InitializeEngine(hInstance, "Engine", "Engine", width, height);
+	engine->Run();
+	delete engine;
 
 	return 0;
 }

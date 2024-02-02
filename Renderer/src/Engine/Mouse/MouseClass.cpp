@@ -55,6 +55,8 @@ void glitc::MouseClass::OnWheelDown(int x, int y)
 
 void glitc::MouseClass::OnMouseMove(int x, int y)
 {
+	this->x = x;
+	this->y = y;
 	this->eventBuffer.push(MouseEvent(MouseEvent::EventType::Move, x, y));
 }
 
@@ -101,7 +103,7 @@ glitc::MouseEvent glitc::MouseClass::ReadEvent()
 	}
 	else
 	{
-		MouseEvent me = this->eventBuffer.front();
+		MouseEvent me = eventBuffer.front();
 		this->eventBuffer.pop();
 		return me;
 	}

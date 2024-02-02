@@ -11,24 +11,21 @@ namespace glitc
 	{
 	public:
 		D3DApplication();
-	protected:
-		WindowCreation* windowCreation = new WindowCreation();
-		Graphics* gfx = new Graphics();
 
-		HINSTANCE hInst;
+		LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+	protected:
+		WindowCreation* windowCreation;
+		KeyboardClass* keyboard;
+		MouseClass* mouse;
+		Graphics* gfx;
 
 		bool InitializeRenderWindow(HINSTANCE hInst, std::string className, std::string windowName, float width, float height);
 		bool InitializeGraphicsAPI(float width, float height, HWND handle);
-
-		wrl::ComPtr<ID3D11Device> pDevice;
-		wrl::ComPtr<ID3D11DeviceContext> pdeviceContext;
-		wrl::ComPtr<IDXGISwapChain1> pswapChain;
-		wrl::ComPtr<IDXGIFactory1> pFactory;
-		wrl::ComPtr<ID3D11RenderTargetView> prendertargetView;
-		wrl::ComPtr<ID3D11Texture2D> backBuffer;
-		D3D11_VIEWPORT viewPort;
 	private:
 		float fWidth, fHeight;
+
+		static LRESULT CALLBACK ProcessMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lParam);
+		static LRESULT CALLBACK _ProcessMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara);
 
 	};
 }

@@ -20,10 +20,14 @@ namespace glitc
 		const XMVECTOR& GetLeftVector() const;
 		const XMVECTOR& GetRightVector() const;
 
+
 		void AdjustPosition(XMVECTOR position);
+		void AdjustRotation(const XMVECTOR& rotation);
 	private:
-		XMVECTOR positionVector;
-		XMFLOAT3 pos, rot = {0.0f, 0.0f, 0.0f};
+		XMVECTOR positionVector, rotationVector;
+		XMFLOAT3 pos = { 0.0f, 0.0f, 0.0f };
+		XMFLOAT3 rot = {0.0f, 0.0f, 0.0f };
+		float roll, pitch, yaw = 0.0f;
 
 		float fovDegrees = 90.0f;
 		float fovRadians = XMConvertToRadians(fovDegrees);
@@ -34,8 +38,8 @@ namespace glitc
 		XMMATRIX world, view, projection;
 
 		DirectX::XMVECTOR eyePosition = { 0.0f, 0.0f, -2.0f, 0.0f },
-					      lookatPos = { 0.0f, 0.0f, 0.0f, 0.0f },
-			              upDirection = { 0.0f, 1.0f, 0.0f, 0.0f };
+					      lookatPos	  =	{ 0.0f, 0.0f,  0.0f, 0.0f },
+			              upDirection = { 0.0f, 1.0f,  0.0f, 0.0f };
 	private:
 		void UpdateViewMatrix();
 		const XMVECTOR DEFAULT_FORWARD_VECTOR    =   { 0.0f, 0.0f, 1.0f, 0.0f  };
