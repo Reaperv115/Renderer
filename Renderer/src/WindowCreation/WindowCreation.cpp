@@ -4,15 +4,23 @@
 
 
 glitc::WindowCreation::WindowCreation()
-	: windowHandle(nullptr), applicationInstance(nullptr),
-	  className(L"Engine"), windowName(L"Engine"),
+	: className(L"Engine"), windowName(L"Engine"),
 	  xPosition(300), yPosition(100)
 {
 
 }
 
 
-bool glitc::WindowCreation::InitializeWindow(D3DApplication* d3dApp, HINSTANCE inst, std::string className, std::string windowName, int width, int height)
+glitc::WindowCreation::~WindowCreation()
+{
+	if (this->windowHandle != NULL)
+	{
+		UnregisterClass(this->className.c_str(), this->applicationInstance);
+		DestroyWindow(windowHandle);
+	}
+}
+
+bool glitc::WindowCreation::InitializeWindow(D3DApplication* application, HINSTANCE inst, std::string className, std::string windowName, int width, int height)
 	{
 		// creating console window to debug
 		this->CreateDebugConsoleWindow();
@@ -39,7 +47,7 @@ bool glitc::WindowCreation::InitializeWindow(D3DApplication* d3dApp, HINSTANCE i
 			NULL,
 			NULL,
 			this->applicationInstance,
-			d3dApp);
+			application);
 
 		// checking to see if it was created successfully
 		if (this->windowHandle == NULL)
@@ -73,6 +81,7 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 	{
 		WNDCLASSEX wc;
 		ZeroMemory(&wc, sizeof(WNDCLASSEX));
+		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		wc.lpszClassName = this->className.c_str();
 		wc.lpszMenuName = this->windowName.c_str();
 		wc.hInstance = this->applicationInstance;
@@ -112,10 +121,14 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 		}
 
 		
-		if (msg.message == WM_QUIT)
+		if (msg.message == WM_NULL)
 		{
-			UnregisterClass(this->className.c_str(), this->applicationInstance);
-			return false;
+			if (!IsWindow(this->windowHandle))
+			{
+				this->windowHandle = NULL;
+				UnregisterClass(this->className.c_str(), this->applicationInstance);
+				return false;
+			}
 		}
 		
 		return true;
@@ -125,8 +138,9 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 	// WindowProc will handle input from mouse and keyboard
 	LRESULT CALLBACK glitc::WindowCreation::HandleMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
 	{
-		// use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
-		if (msg == WM_NCCREATE)
+		switch (msg)
+		{
+		case WM_NCCREATE:
 		{
 			// extract ptr to window from class from creation data
 			const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lPara);
@@ -139,6 +153,7 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 			SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(_HandleMessageRedirect));
 			// forward message to window class handler
 			return pWnd->WindowProc(hwnd, msg, wPara, lPara);
+		}
 		}
 		// if we get a message before the WM_NCCREATE message, handle with default handler
 		return DefWindowProc(hwnd, msg, wPara, lPara);

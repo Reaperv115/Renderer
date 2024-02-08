@@ -11,14 +11,14 @@ glitc::Engine::Engine()
 bool glitc::Engine::InitializeEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height)
 {
 	// initialize render window
-	if (!this->InitializeRenderWindow(hInst, className, windowName, width, height))
+	if (!this->windowCreation->InitializeWindow(this, hInst, className, windowName, width, height))
 	{
 		ErrorLogger::Log("Failed to Initialize Engine");
 		return false;
 	}
 
 	// initialize graphics API
-	if (!this->InitializeGraphicsAPI(width, height, this->windowCreation->GetWindowHandle()))
+	if (!this->gfx->InitializeDirectX(width, height, windowCreation->GetWindowHandle()))
 	{
 		ErrorLogger::Log("Failed to initialize graphics");
 		return false;
@@ -29,54 +29,40 @@ bool glitc::Engine::InitializeEngine(HINSTANCE hInst, std::string className, std
 
 void glitc::Engine::Update()
 {
-	
+	// keyboard events
 	while (!keyboard->CharBufferIsEmpty())
 	{
 		keyStroke = keyboard->ReadChar();
-		std::string outmsg = "Char: ";
-		outmsg += keyStroke;
-		outmsg += '\n';
-		std::cout << outmsg;
 	}
 	while (!keyboard->KeyBufferIsEmpty())
 	{
 		KeyboardEvent kbe = keyboard->ReadKey();
 		unsigned char keycode = kbe.GetKeyCode();
-		std::string outmsg = "Key: ";
-		outmsg += keycode;
-		outmsg += '\n';
-		std::cout << outmsg;
 	}
 
 	// processing window event buffer for mouse
 	while (!mouse->EventBufferisEmpty())
 	{
 		MouseEvent me = mouse->ReadEvent();
-		std::string msg = "X: ";
-		msg += std::to_string(me.GetPosX());
-		msg += " ";
-		msg += "Y: ";
-		msg += std::to_string(me.GetPosY());
-		std::cout << msg << std::endl;
 	}
 
-	// camera movement
-	if (this->keyboard->KeyIsPressed('W'))
+	 //camera movement
+	if (GetAsyncKeyState(0x57))
 	{
 		std::cout << "moving forwards" << std::endl;
-		this->gfx->camera.AdjustPosition(this->gfx->camera.GetForwardVector() * this->timer.SmoothDelta() * cameraspeed);
+		gfx->camera.AdjustPosition(gfx->camera.GetForwardVector() * timer.SmoothDelta() * cameraspeed);
 	}
-	if (keyboard->KeyIsPressed('A'))
+	if (GetAsyncKeyState(0x44))
 	{
 		std::cout << "moving left" << std::endl;
 		gfx->camera.AdjustPosition(gfx->camera.GetLeftVector() * timer.SmoothDelta() * cameraspeed);
 	}
-	if (keyboard->KeyIsPressed('S'))
+	if (GetAsyncKeyState(0x53))
 	{
 		std::cout << "moving backwards" << std::endl;
 		gfx->camera.AdjustPosition(gfx->camera.GetBackwardsVector() * timer.SmoothDelta() * cameraspeed);
 	}
-	if (keyboard->KeyIsPressed('D'))
+	if (GetAsyncKeyState(0x41))
 	{
 		std::cout << "moving right" << std::endl;
 		gfx->camera.AdjustPosition(gfx->camera.GetRightVector() * timer.SmoothDelta() * cameraspeed);

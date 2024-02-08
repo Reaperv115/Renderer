@@ -19,8 +19,6 @@ namespace glitc
 		MouseClass* mouse;
 		Graphics* gfx;
 
-		bool InitializeRenderWindow(HINSTANCE hInst, std::string className, std::string windowName, float width, float height);
-		bool InitializeGraphicsAPI(float width, float height, HWND handle);
 	private:
 		float fWidth, fHeight;
 

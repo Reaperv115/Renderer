@@ -18,7 +18,7 @@ namespace glitc
 		unsigned char keyStroke;
 		Camera camera;
 	private:
-		float cameraspeed = 5.0f;
+		float cameraspeed = 10.0f;
 	};
 }
 

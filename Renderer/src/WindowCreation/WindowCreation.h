@@ -11,8 +11,8 @@ namespace glitc
 	{
 	public:
 		WindowCreation();
-		LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-		bool InitializeWindow(D3DApplication* d3dApp, HINSTANCE inst, std::string className, std::string windowName, int width, int height);
+		~WindowCreation();
+		bool InitializeWindow(D3DApplication* application, HINSTANCE inst, std::string className, std::string windowName, int width, int height);
 		bool Run();
 	public:
 		HWND GetWindowHandle() const;
@@ -33,7 +33,7 @@ namespace glitc
 		void CreateDebugConsoleWindow();
 		void RegisterWindowClass();
 
-		
+
 	};
 }
 

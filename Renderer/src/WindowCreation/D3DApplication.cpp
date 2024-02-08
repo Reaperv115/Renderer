@@ -83,6 +83,62 @@ LRESULT CALLBACK glitc::D3DApplication::WindowProc(HWND hwnd, UINT Msg, WPARAM w
 		mouse->OnMouseMove(x, y);
 		break;
 	}
+	case WM_LBUTTONDOWN:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		mouse->OnLeftButtonPressed(x, y);
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		mouse->OnRightButtonPressed(x, y);
+		break;
+	}
+	case WM_MBUTTONDOWN:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		mouse->OnMiddleButtonPressed(x, y);
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		mouse->OnLeftButtonReleased(x, y);
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		mouse->OnRightButtonReleased(x, y);
+		break;
+	}
+	case WM_MBUTTONUP:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		mouse->OnMiddleButtonReleased(x, y);
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+		{
+			mouse->OnWheelUp(x, y);
+		}
+		else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0)
+		{
+			mouse->OnWheelDown(x, y);
+		}
+		break;
+	}
 	case WM_INPUT:
 	{
 		UINT dataSize = 0;
@@ -102,33 +158,7 @@ LRESULT CALLBACK glitc::D3DApplication::WindowProc(HWND hwnd, UINT Msg, WPARAM w
 		}
 		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}
-	// other messages
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	case WM_CLOSE:
-		DestroyWindow(hwnd);
-		break;
+	default:
+		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}
-	return DefWindowProc(hwnd, Msg, wParam, lParam);
-}
-
-bool glitc::D3DApplication::InitializeGraphicsAPI(float width, float height, HWND handle)
-{
-	if (!this->gfx->InitializeDirectX(width, height, handle))
-	{
-		ErrorLogger::Log("Failed to Initialize Graphics API");
-		return false;
-	}
-	return true;
-}
-
-bool glitc::D3DApplication::InitializeRenderWindow(HINSTANCE hInst, std::string className, std::string windowName, float width, float height)
-{
-	if (!this->windowCreation->InitializeWindow(this, hInst, className, windowName, width, height))
-	{
-		ErrorLogger::Log("Failed to Initialize Render Window");
-		return false;
-	}
-	return true;
 }
