@@ -4,10 +4,11 @@
 
 
 glitc::WindowCreation::WindowCreation()
-	: className(L"Engine"), windowName(L"Engine"),
+	: applicationInstance(nullptr), windowHandle(nullptr),
+	  className(L"Engine"), windowName(L"Engine"),
 	  xPosition(300), yPosition(100)
 {
-
+	
 }
 
 
@@ -21,9 +22,7 @@ glitc::WindowCreation::~WindowCreation()
 }
 
 bool glitc::WindowCreation::InitializeWindow(D3DApplication* application, HINSTANCE inst, std::string className, std::string windowName, int width, int height)
-	{
-		// creating console window to debug
-		this->CreateDebugConsoleWindow();
+{
 
 		// catching instance to application
 		this->applicationInstance = inst;
@@ -39,7 +38,7 @@ bool glitc::WindowCreation::InitializeWindow(D3DApplication* application, HINSTA
 		this->windowHandle = CreateWindowEx(0, 
 			this->className.c_str(), 
 			this->windowName.c_str(), 
-			WS_OVERLAPPEDWINDOW, 
+			WS_OVERLAPPEDWINDOW,
 			this->xPosition,
 			this->yPosition,
 			width,
@@ -48,6 +47,8 @@ bool glitc::WindowCreation::InitializeWindow(D3DApplication* application, HINSTA
 			NULL,
 			this->applicationInstance,
 			application);
+
+		
 
 		// checking to see if it was created successfully
 		if (this->windowHandle == NULL)
@@ -59,9 +60,10 @@ bool glitc::WindowCreation::InitializeWindow(D3DApplication* application, HINSTA
 		{
 			ShowWindow(this->windowHandle, SW_SHOW);
 			UpdateWindow(this->windowHandle);
+			SetFocus(this->windowHandle);
 		}
 		return true;
-	}
+}
 
 	
 
@@ -69,13 +71,7 @@ bool glitc::WindowCreation::InitializeWindow(D3DApplication* application, HINSTA
 
 
 
-void glitc::WindowCreation::CreateDebugConsoleWindow()
-	{
-		AllocConsole();
-		auto obj = freopen("CONIN$", "r", stdin);
-		auto obj2 = freopen("CONOUT$", "w", stdout);
-		auto obj3 = freopen("CONOUT$", "w", stderr);
-	}
+
 
 	void glitc::WindowCreation::RegisterWindowClass()
 	{
@@ -114,7 +110,7 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 	{
 		// running the application
 		MSG msg = { 0 };
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -142,26 +138,36 @@ void glitc::WindowCreation::CreateDebugConsoleWindow()
 		{
 		case WM_NCCREATE:
 		{
-			// extract ptr to window from class from creation data
 			const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lPara);
-			D3DApplication* const pWnd = reinterpret_cast<D3DApplication*>(pCreate->lpCreateParams);
-			//sanity check
-			assert(pWnd != nullptr);
-			// set WinAPI-managed user data to store ptr to window class
-			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
-			// set message proc to normal handler now that setup is finished
-			SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(_HandleMessageRedirect));
-			// forward message to window class handler
-			return pWnd->WindowProc(hwnd, msg, wPara, lPara);
+			D3DApplication* pWindow = reinterpret_cast<D3DApplication*>(pCreate->lpCreateParams);
+			if (pWindow == nullptr) //Sanity check
+			{
+				ErrorLogger::Log("Critical Error: Pointer to window container is null during WM_NCCREATE.");
+				exit(-1);
+			}
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWindow));
+			SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(HandleMessageRedirect));
+			return pWindow->WindowProc(hwnd, msg, wPara, lPara);
 		}
+		default:
+		    // if we get a message before the WM_NCCREATE message, handle with default handler
+		    return DefWindowProc(hwnd, msg, wPara, lPara);
 		}
-		// if we get a message before the WM_NCCREATE message, handle with default handler
-		return DefWindowProc(hwnd, msg, wPara, lPara);
 	}
-	LRESULT CALLBACK glitc::WindowCreation::_HandleMessageRedirect(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
+	LRESULT CALLBACK glitc::WindowCreation::HandleMessageRedirect(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara)
 	{
-		// retrieve ptr to window class
-		D3DApplication* const pWnd = reinterpret_cast<D3DApplication*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-		// forward message to window class handler
-		return pWnd->WindowProc(hwnd, msg, wPara, lPara);
+		switch (msg)
+		{
+		case WM_CLOSE:
+			DestroyWindow(hwnd);
+			break;
+		default:
+		{
+			// retrieve ptr to window class
+			D3DApplication* pWnd = reinterpret_cast<D3DApplication*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+			// forward message to window class handler
+			return pWnd->WindowProc(hwnd, msg, wPara, lPara); 
+		}
+		}
+		
 	}

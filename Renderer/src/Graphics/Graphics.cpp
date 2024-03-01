@@ -180,7 +180,7 @@ void glitc::Graphics::Render()
 	this->DrawRectangleIndexed(this->timer.Delta());
 	
 	// present the buffer to display
-	this->dxgiswapChain->Present(1, 0);
+	this->dxgiswapChain->Present(1u, 0);
 }
 
 // functions for drawing a triangle or rectangle using either

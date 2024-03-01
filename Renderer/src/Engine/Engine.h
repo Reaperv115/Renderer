@@ -1,6 +1,5 @@
 #pragma once
 #include "../WindowCreation/D3DApplication.h"
-#include "../Graphics/Graphics.h"
 #include "Camera.h"
 #include "XTime.h"
 
@@ -17,6 +16,7 @@ namespace glitc
 		XTime timer;
 		unsigned char keyStroke;
 		Camera camera;
+		void CameraMovement(unsigned char keystroke);
 	private:
 		float cameraspeed = 10.0f;
 	};

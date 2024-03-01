@@ -3,7 +3,7 @@
 
 glitc::Engine::Engine()
 	: keyStroke(0u),
-	  cameraspeed(0.02f)
+	  cameraspeed(0.2f)
 {
 
 }
@@ -11,14 +11,14 @@ glitc::Engine::Engine()
 bool glitc::Engine::InitializeEngine(HINSTANCE hInst, std::string className, std::string windowName, int width, int height)
 {
 	// initialize render window
-	if (!this->windowCreation->InitializeWindow(this, hInst, className, windowName, width, height))
+	if (!windowCreation.InitializeWindow(this, hInst, className, windowName, width, height))
 	{
 		ErrorLogger::Log("Failed to Initialize Engine");
 		return false;
 	}
 
 	// initialize graphics API
-	if (!this->gfx->InitializeDirectX(width, height, windowCreation->GetWindowHandle()))
+	if (!gfx.InitializeDirectX(width, height, windowCreation.GetWindowHandle()))
 	{
 		ErrorLogger::Log("Failed to initialize graphics");
 		return false;
@@ -30,54 +30,61 @@ bool glitc::Engine::InitializeEngine(HINSTANCE hInst, std::string className, std
 void glitc::Engine::Update()
 {
 	// keyboard events
-	while (!keyboard->CharBufferIsEmpty())
+	while (!keyboard.CharBufferIsEmpty())
 	{
-		keyStroke = keyboard->ReadChar();
+		keyStroke = keyboard.ReadChar();
 	}
-	while (!keyboard->KeyBufferIsEmpty())
+	while (!keyboard.KeyBufferIsEmpty())
 	{
-		KeyboardEvent kbe = keyboard->ReadKey();
-		unsigned char keycode = kbe.GetKeyCode();
+		KeyboardEvent kbe = keyboard.ReadKey();
+		keyStroke = kbe.GetKeyCode();
 	}
 
 	// processing window event buffer for mouse
-	while (!mouse->EventBufferisEmpty())
+	while (!mouse.EventBufferisEmpty())
 	{
-		MouseEvent me = mouse->ReadEvent();
+		MouseEvent me = mouse.ReadEvent();
 	}
 
-	 //camera movement
-	if (GetAsyncKeyState(0x57))
+	// camera movement
+	if (keyboard.KeyIsPressed('W'))
 	{
 		std::cout << "moving forwards" << std::endl;
-		gfx->camera.AdjustPosition(gfx->camera.GetForwardVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetForwardVector() * timer.SmoothDelta() * cameraspeed);
 	}
-	if (GetAsyncKeyState(0x44))
+	if (keyboard.KeyIsPressed('A'))
 	{
-		std::cout << "moving left" << std::endl;
-		gfx->camera.AdjustPosition(gfx->camera.GetLeftVector() * timer.SmoothDelta() * cameraspeed);
+		std::cout << "moving Left" << std::endl;
+		gfx.camera.AdjustPosition(gfx.camera.GetLeftVector() * timer.SmoothDelta() * cameraspeed);
 	}
-	if (GetAsyncKeyState(0x53))
+	if (keyboard.KeyIsPressed('S'))
 	{
 		std::cout << "moving backwards" << std::endl;
-		gfx->camera.AdjustPosition(gfx->camera.GetBackwardsVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetBackwardsVector() * timer.SmoothDelta() * cameraspeed);
 	}
-	if (GetAsyncKeyState(0x41))
+	if (keyboard.KeyIsPressed('D'))
 	{
 		std::cout << "moving right" << std::endl;
-		gfx->camera.AdjustPosition(gfx->camera.GetRightVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetRightVector() * timer.SmoothDelta() * cameraspeed);
 	}
+
+	// "sprinting"
+	if (GetAsyncKeyState(VK_SHIFT))
+		cameraspeed = 1.0f;
+	else
+		cameraspeed = 0.5f;
 }
 
 void glitc::Engine::Run()
 {
-	this->gfx->InitializeScene();
+	gfx.InitializeScene();
 
 	// run the application
-	while (this->windowCreation->Run())
+	while (windowCreation.Run())
 	{
-		this->timer.Signal();
-		this->Update();
-		this->gfx->Render();
+		timer.Signal();
+		Update();
+		
+		gfx.Render();
 	}
 }

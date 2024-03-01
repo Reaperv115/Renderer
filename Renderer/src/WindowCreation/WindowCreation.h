@@ -21,7 +21,8 @@ namespace glitc
 		HINSTANCE GetApplicationInstance() const;
 	private:
 		static LRESULT CALLBACK HandleMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lParam);
-		static LRESULT CALLBACK _HandleMessageRedirect(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara);
+		static LRESULT CALLBACK HandleMessageRedirect(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara);
+		void RegisterRawInput();
 		MouseClass* mouse = new MouseClass();
 		KeyboardClass* keyboard = new KeyboardClass();
 		HWND windowHandle;

@@ -65,12 +65,12 @@ void glitc::MouseClass::OnMouseMoveRaw(int x, int y)
 	this->eventBuffer.push(MouseEvent(MouseEvent::EventType::RAW_MOVE, x, y));
 }
 
-bool glitc::MouseClass::IsLeftButtonDown(int x, int y)
+bool glitc::MouseClass::IsLeftButtonDown()
 {
 	return this->isleftPressed;
 }
 
-bool glitc::MouseClass::IsRightButtonDown(int x, int y)
+bool glitc::MouseClass::IsRightButtonDown()
 {
 	return this->isrightPressed;
 }
