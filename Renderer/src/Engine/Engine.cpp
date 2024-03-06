@@ -44,35 +44,47 @@ void glitc::Engine::Update()
 	while (!mouse.EventBufferisEmpty())
 	{
 		MouseEvent me = mouse.ReadEvent();
+		if (me.GetType() == MouseEvent::EventType::RAW_MOVE)
+		{
+			if (mouse.IsRightButtonDown())
+			{
+				gfx.camera.AdjustRotation((float)me.GetPosY() * 0.01f, (float)me.GetPosX() * 0.01f, 0);
+			}
+		}
 	}
 
 	// camera movement
 	if (keyboard.KeyIsPressed('W'))
 	{
 		std::cout << "moving forwards" << std::endl;
-		gfx.camera.AdjustPosition(gfx.camera.GetForwardVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetForwardVector() * timer.SmoothDelta() * (double)cameraspeed);
 	}
 	if (keyboard.KeyIsPressed('A'))
 	{
 		std::cout << "moving Left" << std::endl;
-		gfx.camera.AdjustPosition(gfx.camera.GetLeftVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetLeftVector() * timer.SmoothDelta() * (double)cameraspeed);
 	}
 	if (keyboard.KeyIsPressed('S'))
 	{
 		std::cout << "moving backwards" << std::endl;
-		gfx.camera.AdjustPosition(gfx.camera.GetBackwardsVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetBackwardsVector() * timer.SmoothDelta() * (double)cameraspeed);
 	}
 	if (keyboard.KeyIsPressed('D'))
 	{
 		std::cout << "moving right" << std::endl;
-		gfx.camera.AdjustPosition(gfx.camera.GetRightVector() * timer.SmoothDelta() * cameraspeed);
+		gfx.camera.AdjustPosition(gfx.camera.GetRightVector() * timer.SmoothDelta() * (double)cameraspeed);
+	}
+
+	if (keyboard.KeyIsPressed('R'))
+	{
+		gfx.camera.ResetCamera();
 	}
 
 	// "sprinting"
 	if (GetAsyncKeyState(VK_SHIFT))
-		cameraspeed = 1.0f;
+		cameraspeed = 10.0;
 	else
-		cameraspeed = 0.5f;
+		cameraspeed = 5.0;
 }
 
 void glitc::Engine::Run()
@@ -84,7 +96,6 @@ void glitc::Engine::Run()
 	{
 		timer.Signal();
 		Update();
-		
 		gfx.Render();
 	}
 }

@@ -4,8 +4,6 @@
 
 
 glitc::D3DApplication::D3DApplication()
-	: fWidth(600.0f),
-	  fHeight(800.0f)
 {
 	RegisterRawInput();
 }
@@ -122,20 +120,20 @@ LRESULT CALLBACK glitc::D3DApplication::WindowProc(HWND hwnd, UINT Msg, WPARAM w
 	case WM_INPUT:
 	{
 		UINT dataSize = 0;
-		GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &dataSize, sizeof(RAWINPUTHEADER));
+		if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &dataSize, sizeof(RAWINPUTHEADER)) == -1)
+			break;
 
-		if (dataSize > 0)
+		
+		std::unique_ptr<BYTE[]> rawdata = std::make_unique<BYTE[]>(dataSize);
+		if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.get(), &dataSize, sizeof(RAWINPUTHEADER)) != dataSize)
+			break;
+
+		RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
+		if (raw->header.dwType == RIM_TYPEMOUSE)
 		{
-			std::unique_ptr<BYTE[]> rawdata = std::make_unique<BYTE[]>(dataSize);
-			if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
-			{
-				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
-				if (raw->header.dwType == RIM_TYPEMOUSE)
-				{
-					mouse.OnMouseMoveRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
-				}
-			}
+			mouse.OnMouseMoveRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
 		}
+		
 		return DefWindowProc(hwnd, Msg, wParam, lParam);
 	}
 	default:

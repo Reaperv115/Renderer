@@ -11,17 +11,16 @@ namespace glitc
 	{
 	public:
 		D3DApplication();
-
 		LRESULT CALLBACK WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+		static double GetWidth();
+		static double GetHeight();
 	protected:
 		WindowCreation windowCreation;
 		KeyboardClass keyboard;
 		MouseClass mouse;
 		Graphics gfx;
-
+		double width, height;
 	private:
-		float fWidth, fHeight;
-
 		static LRESULT CALLBACK ProcessMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lParam);
 		static LRESULT CALLBACK _ProcessMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara);
 		void RegisterRawInput();

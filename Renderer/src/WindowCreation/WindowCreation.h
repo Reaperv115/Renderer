@@ -22,7 +22,6 @@ namespace glitc
 	private:
 		static LRESULT CALLBACK HandleMessageSetup(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lParam);
 		static LRESULT CALLBACK HandleMessageRedirect(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara);
-		void RegisterRawInput();
 		MouseClass* mouse = new MouseClass();
 		KeyboardClass* keyboard = new KeyboardClass();
 		HWND windowHandle;
@@ -31,7 +30,6 @@ namespace glitc
 		std::wstring windowName;
 		float xPosition, yPosition;
 	private:
-		void CreateDebugConsoleWindow();
 		void RegisterWindowClass();
 
 

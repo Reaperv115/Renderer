@@ -43,10 +43,10 @@ namespace glitc
 		ComPtr<ID3D11InputLayout> rectangleinputLayout;
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-
 		XTime timer;
 	public:
 		Camera camera;
+		bool drawnewShape;
 	public:
 		bool InitializeDirectX(int width, int height, HWND handle);
 		void InitializeScene();
@@ -55,6 +55,8 @@ namespace glitc
 		void DrawRectangle(float x, float y);
 		void DrawRectangleIndexed(double deltatime);
 		void DrawTriangleIndexed();
+		bool GetDrawNewShape() const;
+		void SetDrawNewShape(bool drawshape);
 	private:
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;

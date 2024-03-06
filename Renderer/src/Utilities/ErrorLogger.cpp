@@ -15,4 +15,9 @@ namespace glitc
 		MessageBoxW(NULL, error_message.c_str(), L"Error", MB_ICONERROR);
 	}
 
+	void DebugLogger::Log(std::wstring debugmessage)
+	{
+		OutputDebugStringW(debugmessage.c_str());
+	}
+
 }

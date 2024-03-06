@@ -14,8 +14,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return -1;
 	}
 
-	float width = 800.0f;
-	float height = 600.0f;
+	double width = 800.0f;
+	double height = 600.0f;
 	glitc::Engine* engine = new glitc::Engine();
 	engine->InitializeEngine(hInstance, "Engine", "Engine", width, height);
 	engine->Run();

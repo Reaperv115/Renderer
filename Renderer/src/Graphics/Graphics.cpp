@@ -104,7 +104,7 @@ bool glitc::Graphics::InitializeDirectX(int width, int height, HWND handle)
 
 void glitc::Graphics::InitializeScene()
 {
-	
+	drawnewShape = false;
 
 	// loading in textures
 	glitc_ASSERT(DirectX::CreateWICTextureFromFile(this->d3dDevice.Get(), L"Textures/Doom-Symbol.jpg", nullptr, this->Doomtexture.GetAddressOf()), "Failed to create texture from doom logo");
@@ -164,7 +164,7 @@ void glitc::Graphics::Render()
 	memcpy(this->mappedResource.pData, &this->constantbufferData, sizeof(this->constantbufferData));
 	this->d3ddeviceContext->Unmap(this->constantBuffer.Get(), NULL);
 
-	
+	this->d3ddeviceContext->VSSetConstantBuffers(0, 1, this->constantBuffer.GetAddressOf());
 	
 	// drawing square
 	this->d3ddeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -175,7 +175,8 @@ void glitc::Graphics::Render()
 	this->d3ddeviceContext->VSSetShader(this->vShader.Get(), NULL, 0);
 	this->d3ddeviceContext->PSSetShader(this->pShader.Get(), NULL, 0);
 
-	
+	if (drawnewShape)
+		this->DrawTriangle(-0.75f, -0.75f);
 
 	this->DrawRectangleIndexed(this->timer.Delta());
 	
@@ -214,13 +215,13 @@ void glitc::Graphics::DrawRectangle(float x, float y)
 	// red rectangle vertex buffer data
 	Vertex Rectangle[] =
 	{
-		{ -x,  -y, 0.0f,       1.0f, 0.0f },// bottom left
-		{ -x,   y, 0.0f,	   1.0f, 0.0f },// top left
+		{ -(x),  -(y), 0.0f,       1.0f, 0.0f },// bottom left
+		{ -(x),   y, 0.0f,	   1.0f, 0.0f },// top left
 		{  x,   y, 0.0f,	   1.0f, 0.0f },// top right
 
 		{  x,   y, 0.0f,       1.0f, 0.0f },// top right
-		{ -x,  -y, 0.0f,       1.0f, 0.0f },// bottom left
-		{  x,  -y, 0.0f,       1.0f, 0.0f }// bottom right
+		{ -(x),  -(y), 0.0f,       1.0f, 0.0f },// bottom left
+		{  x,  -(y), 0.0f,       1.0f, 0.0f }// bottom right
 	};
 	D3D11_BUFFER_DESC tmprectanglebufrerDescription;
 	ZeroMemory(&tmprectanglebufrerDescription, sizeof(tmprectanglebufrerDescription));
@@ -341,4 +342,14 @@ void glitc::Graphics::DrawTriangleIndexed()
 	this->d3ddeviceContext->PSSetShaderResources(0, 1, this->Marveltexture.GetAddressOf());
 	this->d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	this->d3ddeviceContext->DrawIndexed((UINT)std::size(indices), 0, 0);
+}
+
+bool glitc::Graphics::GetDrawNewShape() const
+{
+	return this->drawnewShape;
+}
+
+void glitc::Graphics::SetDrawNewShape(bool drawshape)
+{
+	this->drawnewShape = drawshape;
 }

@@ -4,6 +4,7 @@ using namespace DirectX;
 
 namespace glitc
 {
+	class D3DApplication;
 	class Camera
 	{
 	public:
@@ -13,6 +14,8 @@ namespace glitc
 		const XMMATRIX& GetViewMatrix() const;
 		const XMMATRIX& GetProjectionMatrix() const;
 
+		void SetProjectionMatrix(XMMATRIX projectionMatrix);
+
 		const XMVECTOR& GetForwardVector() const;
 		const XMVECTOR& GetBackwardsVector() const;
 		const XMVECTOR& GetUpwardVector() const;
@@ -20,9 +23,15 @@ namespace glitc
 		const XMVECTOR& GetLeftVector() const;
 		const XMVECTOR& GetRightVector() const;
 
+		float GetNearZ() const;
+		float GetFarZ() const;
 
+		void AdjustPosition(float x, float y, float z);
 		void AdjustPosition(XMVECTOR position);
 		void AdjustRotation(const XMVECTOR& rotation);
+		void AdjustRotation(float x, float y, float z);
+
+		void ResetCamera();
 	private:
 		XMVECTOR positionVector, rotationVector;
 		XMFLOAT3 pos = { 0.0f, 0.0f, 0.0f };

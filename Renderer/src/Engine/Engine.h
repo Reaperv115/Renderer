@@ -14,11 +14,10 @@ namespace glitc
 		void Run();
 	private:
 		XTime timer;
-		unsigned char keyStroke;
 		Camera camera;
-		void CameraMovement(unsigned char keystroke);
+		unsigned char keyStroke;
 	private:
-		float cameraspeed = 10.0f;
+		double cameraspeed = 5.0;
 	};
 }
 
