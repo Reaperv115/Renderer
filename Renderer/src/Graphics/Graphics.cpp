@@ -98,6 +98,13 @@ bool glitc::Graphics::InitializeDirectX(int width, int height, HWND handle)
 	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
 	glitc_ASSERT(this->d3dDevice->CreateSamplerState(&samplerDescription, this->samplerState.GetAddressOf()), "Failed to create sampler state");
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplWin32_Init(handle);
+	ImGui_ImplDX11_Init(this->d3dDevice.Get(), this->d3ddeviceContext.Get());
+	ImGui::StyleColorsDark();
+
 	return true;
 }
 
@@ -175,10 +182,16 @@ void glitc::Graphics::Render()
 	this->d3ddeviceContext->VSSetShader(this->vShader.Get(), NULL, 0);
 	this->d3ddeviceContext->PSSetShader(this->pShader.Get(), NULL, 0);
 
-	if (drawnewShape)
-		this->DrawTriangle(-0.75f, -0.75f);
 
 	this->DrawRectangleIndexed(this->timer.Delta());
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGui::Begin("Test");
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	
 	// present the buffer to display
 	this->dxgiswapChain->Present(1u, 0);

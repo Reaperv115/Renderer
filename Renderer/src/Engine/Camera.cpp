@@ -105,10 +105,6 @@ void glitc::Camera::ResetCamera()
 	this->positionVector = { 0.0f, 0.0f, -2.0f, 0.0f };
 	this->eyePosition = this->positionVector;
 	this->rot = { 0.0f, 0.0f, 0.0f };
-
-	//this->world = XMMatrixIdentity();
-	//this->view = XMMatrixLookAtLH(this->eyePosition, this->lookatPos, this->upDirection);
-	//this->projection = XMMatrixPerspectiveFovLH(this->fovRadians, this->aspectRatio, this->nearZ, this->farZ);
 	this->UpdateViewMatrix();
 }
 
@@ -129,6 +125,7 @@ void glitc::Camera::UpdateViewMatrix()
 	XMVECTOR upDirection = XMVector3TransformCoord(this->DEFAULT_UPWARD_VECTOR, rotationMatrix);
 	this->view = XMMatrixLookAtLH(this->positionVector, cameraTarget, upDirection);
 
+	// to make sure the camera doesn't ascend or descend when looking up or down when moving
 	XMMATRIX vectorrotationMatrix = XMMatrixRotationRollPitchYaw(0.0f, this->rot.y, 0.0f);
 	this->vectorForward = XMVector3TransformCoord(this->DEFAULT_FORWARD_VECTOR, vectorrotationMatrix);
 	this->vectorBackward = XMVector3TransformCoord(this->DEFAULT_BACKWARD_VECTOR, vectorrotationMatrix);

@@ -93,7 +93,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Renderer\Helper_Libraries\ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Renderer\Helper_Libraries\ImGuiIMGUI_USE_STB_SPRINTF</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Renderer\Helper_Libraries\ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Renderer\Helper_Libraries\ImGuiIMGUI_USE_STB_SPRINTF</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Renderer\src;$(SolutionDir)Renderer\Helper_Libraries\DirectXTK\Inc;$(SolutionDir)\Renderer\Helper_Libraries\ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Renderer\src;$(SolutionDir)Renderer\Helper_Libraries\DirectXTK\Inc;$(SolutionDir)\Renderer\Helper_Libraries\ImGuiIMGUI_USE_STB_SPRINTF</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>trpch.h</PrecompiledHeaderFile>
@@ -145,7 +145,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Renderer\Helper_Libraries\ImGui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Renderer\Helper_Libraries\ImGuiIMGUI_USE_STB_SPRINTF</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +155,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Helper_Libraries\ImGui\imgui.cpp" />
+    <ClCompile Include="Helper_Libraries\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="Helper_Libraries\ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Helper_Libraries\ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Helper_Libraries\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="Helper_Libraries\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\Engine\Keyboard\KeyboardClass.cpp" />
     <ClCompile Include="src\Engine\Keyboard\KeyboardEvent.cpp" />
     <ClCompile Include="src\WindowCreation\D3DApplication.cpp" />
@@ -174,6 +180,14 @@
     <ClCompile Include="src\WindowCreation\WindowCreation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Helper_Libraries\ImGui\imconfig.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imgui.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imgui_internal.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imstb_textedit.h" />
+    <ClInclude Include="Helper_Libraries\ImGui\imstb_truetype.h" />
     <ClInclude Include="src\Engine\Keyboard\KeyboardClass.h" />
     <ClInclude Include="src\Engine\Keyboard\KeyboardEvent.h" />
     <ClInclude Include="src\WindowCreation\D3DApplication.h" />
