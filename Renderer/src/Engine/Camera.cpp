@@ -18,6 +18,10 @@ void glitc::Camera::SetCameraPosition(XMVECTOR& position)
 	this->positionVector = this->eyePosition;
 }
 
+XMMATRIX& glitc::Camera::GetWorldMatrix()
+{
+	return this->world;
+}
 const XMMATRIX& glitc::Camera::GetWorldMatrix() const
 {
 	return this->world;

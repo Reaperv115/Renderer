@@ -10,6 +10,7 @@ namespace glitc
 	public:
 		void Initialize();
 		void SetCameraPosition(XMVECTOR& position);
+		XMMATRIX& GetWorldMatrix();
 		const XMMATRIX& GetWorldMatrix() const;
 		const XMMATRIX& GetViewMatrix() const;
 		const XMMATRIX& GetProjectionMatrix() const;

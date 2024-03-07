@@ -58,8 +58,6 @@ namespace glitc
 		void DrawRectangle(float x, float y);
 		void DrawRectangleIndexed(double deltatime);
 		void DrawTriangleIndexed();
-		bool GetDrawNewShape() const;
-		void SetDrawNewShape(bool drawshape);
 	private:
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;

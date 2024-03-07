@@ -7,9 +7,12 @@ glitc::D3DApplication::D3DApplication()
 {
 	RegisterRawInput();
 }
-
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wPara, LPARAM lPara);
 LRESULT CALLBACK glitc::D3DApplication::WindowProc(HWND hwnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, Msg, wParam, lParam))
+		return true;
+
 	switch (Msg)
 	{
 		// keyboard messages

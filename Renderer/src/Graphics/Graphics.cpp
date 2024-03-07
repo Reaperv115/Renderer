@@ -164,6 +164,9 @@ void glitc::Graphics::Render()
 	// clearing depth stencil buffer
 	this->d3ddeviceContext->ClearDepthStencilView(this->depthstencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	static float translationoffSet[3] = { 0, 0, 0 };
+	this->camera.GetWorldMatrix() = XMMatrixTranslation(translationoffSet[0], translationoffSet[1], translationoffSet[2]);
+
 	this->constantbufferData.mat = this->camera.GetWorldMatrix() * this->camera.GetViewMatrix() * this->camera.GetProjectionMatrix();
 
 	// updating constant buffer
@@ -185,12 +188,20 @@ void glitc::Graphics::Render()
 
 	this->DrawRectangleIndexed(this->timer.Delta());
 
+	// start the imgui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	// create imgui test window
 	ImGui::Begin("Test");
+	ImGui::DragFloat3("Translation X/Y/Z", translationoffSet, 0.1f, -5.0f, 5.0f);
 	ImGui::End();
+
+	// assemble draw data
 	ImGui::Render();
+
+	// render draw data
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	
 	// present the buffer to display
@@ -355,14 +366,4 @@ void glitc::Graphics::DrawTriangleIndexed()
 	this->d3ddeviceContext->PSSetShaderResources(0, 1, this->Marveltexture.GetAddressOf());
 	this->d3ddeviceContext->IASetIndexBuffer(rectangleindexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	this->d3ddeviceContext->DrawIndexed((UINT)std::size(indices), 0, 0);
-}
-
-bool glitc::Graphics::GetDrawNewShape() const
-{
-	return this->drawnewShape;
-}
-
-void glitc::Graphics::SetDrawNewShape(bool drawshape)
-{
-	this->drawnewShape = drawshape;
 }
